@@ -96,6 +96,7 @@ func (c *Camera) SetProperty(id int, value float64) int {
 func (c *Camera) Close() (err error) {
 	if c.camera == nil {
 		err = fmt.Errorf("camera: camera is not opened")
+		return
 	}
 
 	c.camera.Release()
