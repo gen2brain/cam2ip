@@ -45,36 +45,6 @@ func (h *HTML) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 var html = `<html>
     <head>
         <title>cam2ip</title>
-        <style>
-        body {
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            margin: 0;
-            background-color: #000000;
-        }
-
-        div {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-
-        canvas {
-            height: auto;
-            width: auto;
-            max-height: 100%;
-            max-width: 100%;
-            display: block;
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            box-sizing: border-box;
-            margin: auto;
-        }
-        </style>
         <script>
         var url = "ws://{BIND}/socket";
         ws = new WebSocket(url);
@@ -103,7 +73,13 @@ var html = `<html>
         }
         </script>
     </head>
-    <body>
-        <div><canvas id="canvas" width="{WIDTH}" height="{HEIGHT}"></canvas></div>
+	<body style="background-color: #000000">
+		<table style="width:100%; height:100%">
+			<tr style="height:100%">
+				<td style="height:100%; text-align:center">
+					<canvas id="canvas" width="{WIDTH}" height="{HEIGHT}"></canvas>
+				</td>
+			</tr>
+		</table>
     </body>
 </html>`
