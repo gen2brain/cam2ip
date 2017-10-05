@@ -18,10 +18,10 @@ or
 
 Binaries are compiled with static OpenCV library:
 
- - [Android 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.0/cam2ip-1.0-android.tar.gz)
- - [Linux 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.0/cam2ip-1.0-64bit.tar.gz)
- - [RPi 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.0/cam2ip-1.0-RPi.tar.gz)
- - [Windows 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.0/cam2ip-1.0.zip)
+ - [Android 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.1/cam2ip-1.1-android.tar.gz)
+ - [Linux 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.1/cam2ip-1.1-64bit.tar.gz)
+ - [RPi 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.1/cam2ip-1.1-RPi.tar.gz)
+ - [Windows 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.1/cam2ip-1.1.zip)
 
 
 ### Installation
