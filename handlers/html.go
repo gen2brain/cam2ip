@@ -44,31 +44,31 @@ func (h *HTML) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 var html = `<html>
     <head>
+        <meta charset="utf-8"/>
         <title>cam2ip</title>
         <script>
-        var url = "ws://{BIND}/socket";
-        ws = new WebSocket(url);
-	var image = new Image();
+        ws = new WebSocket("ws://{BIND}/socket");
+        var image = new Image();
 
-	ws.onopen = function() {
-		var context = document.getElementById("canvas").getContext("2d");
-		image.onload = function() {
-			context.drawImage(image, 0, 0);
-		}
-	}
+        ws.onopen = function() {
+            var context = document.getElementById("canvas").getContext("2d");
+            image.onload = function() {
+                context.drawImage(image, 0, 0);
+            }
+        }
 
         ws.onmessage = function(e) {
-		image.setAttribute("src", "data:image/jpeg;base64," + e.data);
+            image.setAttribute("src", "data:image/jpeg;base64," + e.data);
         }
         </script>
     </head>
-	<body style="background-color: #000000">
-		<table style="width:100%; height:100%">
-			<tr style="height:100%">
-				<td style="height:100%; text-align:center">
-					<canvas id="canvas" width="{WIDTH}" height="{HEIGHT}"></canvas>
-				</td>
-			</tr>
-		</table>
-	</body>
+    <body style="background-color: #000000">
+        <table style="width:100%; height:100%">
+            <tr style="height:100%">
+                <td style="height:100%; text-align:center">
+                    <canvas id="canvas" width="{WIDTH}" height="{HEIGHT}"></canvas>
+                </td>
+           </tr>
+        </table>
+    </body>
 </html>`
