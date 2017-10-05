@@ -1,6 +1,6 @@
 ## cam2ip
 
-Turn any webcam into ip camera.
+Turn any webcam into an IP camera.
 
 Example (in web browser):
 
