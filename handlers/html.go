@@ -48,28 +48,17 @@ var html = `<html>
         <script>
         var url = "ws://{BIND}/socket";
         ws = new WebSocket(url);
+	var image = new Image();
 
-        ws.onopen = function() {
-            console.log("onopen");
-        }
+	ws.onopen = function() {
+		var context = document.getElementById("canvas").getContext("2d");
+		image.onload = function() {
+			context.drawImage(image, 0, 0);
+		}
+	}
 
         ws.onmessage = function(e) {
-			var context = document.getElementById("canvas").getContext("2d");
-			
-			var image = new Image();
-			image.onload = function() {
-				context.drawImage(image, 0, 0);
-			}
-
-            image.setAttribute("src", "data:image/jpeg;base64," + e.data);
-        }
-
-        ws.onclose = function(e) {
-            console.log("onclose");
-        }
-
-        ws.onerror = function(e) {
-            console.log("onerror");
+		image.setAttribute("src", "data:image/jpeg;base64," + e.data);
         }
         </script>
     </head>
@@ -81,5 +70,5 @@ var html = `<html>
 				</td>
 			</tr>
 		</table>
-    </body>
+	</body>
 </html>`
