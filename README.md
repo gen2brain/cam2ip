@@ -18,10 +18,10 @@ or
 
 Binaries are compiled with static OpenCV library:
 
- - [Android 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.1/cam2ip-1.1-android.tar.gz)
- - [Linux 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.1/cam2ip-1.1-64bit.tar.gz)
- - [RPi 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.1/cam2ip-1.1-RPi.tar.gz)
- - [Windows 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.1/cam2ip-1.1.zip)
+ - [Android 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.2/cam2ip-1.2-android.tar.gz)
+ - [Linux 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.2/cam2ip-1.2-64bit.tar.gz)
+ - [RPi 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.2/cam2ip-1.2-RPi.tar.gz)
+ - [Windows 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.2/cam2ip-1.2.zip)
 
 
 ### Installation
@@ -35,17 +35,19 @@ This will install app in `$GOPATH/bin/cam2ip`.
 ```
 Usage of ./cam2ip:
   -bind-addr string
-    	Bind address (default ":56000")
+        Bind address (default ":56000")
   -delay int
-    	Delay between frames, in milliseconds (default 10)
+        Delay between frames, in milliseconds (default 10)
   -frame-height float
-    	Frame height (default 480)
+        Frame height (default 480)
   -frame-width float
-    	Frame width (default 640)
+        Frame width (default 640)
   -htpasswd-file string
-    	Path to htpasswd file, if empty auth is disabled
+        Path to htpasswd file, if empty auth is disabled
   -index int
-    	Camera index
+        Camera index
+  -webgl
+        Use WebGL to draw images
 ```
 
 ### Handlers

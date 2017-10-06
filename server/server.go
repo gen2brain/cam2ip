@@ -24,6 +24,7 @@ type Server struct {
 	Delay       int
 	FrameWidth  float64
 	FrameHeight float64
+	WebGL       bool
 
 	Camera *camera.Camera
 }
@@ -42,7 +43,7 @@ func (s *Server) ListenAndServe() error {
 		basic = auth.NewBasicAuthenticator(realm, auth.HtpasswdFileProvider(s.Htpasswd))
 	}
 
-	http.Handle("/html", newAuthHandler(handlers.NewHTML(s.Bind, s.FrameWidth, s.FrameHeight), basic))
+	http.Handle("/html", newAuthHandler(handlers.NewHTML(s.Bind, s.FrameWidth, s.FrameHeight, s.WebGL), basic))
 	http.Handle("/jpeg", newAuthHandler(handlers.NewJPEG(s.Camera), basic))
 	http.Handle("/mjpeg", newAuthHandler(handlers.NewMJPEG(s.Camera, s.Delay), basic))
 
