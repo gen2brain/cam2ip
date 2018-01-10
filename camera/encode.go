@@ -5,7 +5,7 @@ import (
 	//"image/jpeg"
 	"io"
 
-	jpeg "github.com/kjk/golibjpegturbo"
+	jpeg "github.com/antonini/golibjpegturbo"
 )
 
 // NewEncoder returns a new Encoder.
