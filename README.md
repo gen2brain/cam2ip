@@ -38,9 +38,9 @@ Usage of ./cam2ip:
         Bind address (default ":56000")
   -delay int
         Delay between frames, in milliseconds (default 10)
-  -frame-height float
+  -height float
         Frame height (default 480)
-  -frame-width float
+  -width float
         Frame width (default 640)
   -htpasswd-file string
         Path to htpasswd file, if empty auth is disabled

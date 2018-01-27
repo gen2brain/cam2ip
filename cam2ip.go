@@ -20,8 +20,8 @@ func main() {
 
 	flag.IntVar(&srv.Index, "index", 0, "Camera index")
 	flag.IntVar(&srv.Delay, "delay", 10, "Delay between frames, in milliseconds")
-	flag.Float64Var(&srv.FrameWidth, "frame-width", 640, "Camera frame width")
-	flag.Float64Var(&srv.FrameHeight, "frame-height", 480, "Camera frame height")
+	flag.Float64Var(&srv.FrameWidth, "width", 640, "Frame width")
+	flag.Float64Var(&srv.FrameHeight, "height", 480, "Frame height")
 	flag.BoolVar(&srv.NoWebGL, "nowebgl", false, "Disable WebGL drawing of images (html handler)")
 	flag.StringVar(&srv.Bind, "bind-addr", ":56000", "Bind address")
 	flag.StringVar(&srv.Htpasswd, "htpasswd-file", "", "Path to htpasswd file, if empty auth is disabled")
