@@ -8,29 +8,29 @@ import (
 
 	"golang.org/x/net/websocket"
 
-	"github.com/gen2brain/cam2ip/camera"
 	"github.com/gen2brain/cam2ip/encoder"
+	"github.com/gen2brain/cam2ip/reader"
 )
 
 // Socket handler.
 type Socket struct {
-	camera *camera.Camera
+	reader reader.ImageReader
 	delay  int
 }
 
 // NewSocket returns new socket handler.
-func NewSocket(camera *camera.Camera, delay int) websocket.Handler {
-	s := &Socket{camera, delay}
+func NewSocket(reader reader.ImageReader, delay int) websocket.Handler {
+	s := &Socket{reader, delay}
 	return websocket.Handler(s.write)
 }
 
 // write writes images to socket
 func (s *Socket) write(ws *websocket.Conn) {
 	for {
-		img, err := s.camera.Read()
+		img, err := s.reader.Read()
 		if err != nil {
 			log.Printf("socket: read: %v", err)
-			continue
+			break
 		}
 
 		w := new(bytes.Buffer)

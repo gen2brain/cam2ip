@@ -4,18 +4,18 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gen2brain/cam2ip/camera"
 	"github.com/gen2brain/cam2ip/encoder"
+	"github.com/gen2brain/cam2ip/reader"
 )
 
 // JPEG handler.
 type JPEG struct {
-	camera *camera.Camera
+	reader reader.ImageReader
 }
 
 // NewJPEG returns new JPEG handler.
-func NewJPEG(camera *camera.Camera) *JPEG {
-	return &JPEG{camera}
+func NewJPEG(reader reader.ImageReader) *JPEG {
+	return &JPEG{reader}
 }
 
 // ServeHTTP handles requests on incoming connections.
@@ -29,7 +29,7 @@ func (j *JPEG) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Cache-Control", "no-store, no-cache")
 	w.Header().Add("Content-Type", "image/jpeg")
 
-	img, err := j.camera.Read()
+	img, err := j.reader.Read()
 	if err != nil {
 		log.Printf("jpeg: read: %v", err)
 		return

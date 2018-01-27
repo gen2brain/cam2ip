@@ -53,14 +53,12 @@ const (
 
 // Camera represents camera.
 type Camera struct {
-	Index  int
 	camera *opencv.Capture
 }
 
 // New returns new Camera for given camera index.
 func New(index int) (camera *Camera, err error) {
 	camera = &Camera{}
-	camera.Index = index
 
 	camera.camera = opencv.NewCameraCapture(index)
 	if camera.camera == nil {

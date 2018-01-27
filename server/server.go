@@ -8,8 +8,8 @@ import (
 
 	"github.com/abbot/go-http-auth"
 
-	"github.com/gen2brain/cam2ip/camera"
 	"github.com/gen2brain/cam2ip/handlers"
+	"github.com/gen2brain/cam2ip/reader"
 )
 
 // Server struct.
@@ -20,13 +20,17 @@ type Server struct {
 	Bind     string
 	Htpasswd string
 
-	Index       int
-	Delay       int
+	Index int
+	Delay int
+
 	FrameWidth  float64
 	FrameHeight float64
-	NoWebGL     bool
 
-	Camera *camera.Camera
+	NoWebGL bool
+
+	FileName string
+
+	Reader reader.ImageReader
 }
 
 // NewServer returns new Server.
@@ -44,10 +48,10 @@ func (s *Server) ListenAndServe() error {
 	}
 
 	http.Handle("/html", newAuthHandler(handlers.NewHTML(s.Bind, s.FrameWidth, s.FrameHeight, s.NoWebGL), basic))
-	http.Handle("/jpeg", newAuthHandler(handlers.NewJPEG(s.Camera), basic))
-	http.Handle("/mjpeg", newAuthHandler(handlers.NewMJPEG(s.Camera, s.Delay), basic))
+	http.Handle("/jpeg", newAuthHandler(handlers.NewJPEG(s.Reader), basic))
+	http.Handle("/mjpeg", newAuthHandler(handlers.NewMJPEG(s.Reader, s.Delay), basic))
 
-	http.Handle("/socket", handlers.NewSocket(s.Camera, s.Delay))
+	http.Handle("/socket", handlers.NewSocket(s.Reader, s.Delay))
 
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

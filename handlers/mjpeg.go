@@ -9,19 +9,19 @@ import (
 	"net/textproto"
 	"time"
 
-	"github.com/gen2brain/cam2ip/camera"
 	"github.com/gen2brain/cam2ip/encoder"
+	"github.com/gen2brain/cam2ip/reader"
 )
 
 // MJPEG handler.
 type MJPEG struct {
-	camera *camera.Camera
+	reader reader.ImageReader
 	delay  int
 }
 
 // NewMJPEG returns new MJPEG handler.
-func NewMJPEG(camera *camera.Camera, delay int) *MJPEG {
-	return &MJPEG{camera, delay}
+func NewMJPEG(reader reader.ImageReader, delay int) *MJPEG {
+	return &MJPEG{reader, delay}
 }
 
 // ServeHTTP handles requests on incoming connections.
@@ -56,7 +56,7 @@ loop:
 				continue
 			}
 
-			img, err := m.camera.Read()
+			img, err := m.reader.Read()
 			if err != nil {
 				log.Printf("mjpeg: read: %v", err)
 				continue

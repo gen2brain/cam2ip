@@ -1,3 +1,4 @@
+// Package encoder.
 package encoder
 
 import (
