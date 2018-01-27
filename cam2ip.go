@@ -38,7 +38,7 @@ func main() {
 		}
 	}
 
-	srv.Camera, err = camera.NewCamera(srv.Index)
+	srv.Camera, err = camera.New(srv.Index)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 		os.Exit(1)

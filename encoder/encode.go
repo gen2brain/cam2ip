@@ -1,4 +1,4 @@
-package camera
+package encoder
 
 import (
 	"image"
@@ -8,8 +8,8 @@ import (
 	jpeg "github.com/antonini/golibjpegturbo"
 )
 
-// NewEncoder returns a new Encoder.
-func NewEncoder(w io.Writer) *Encoder {
+// New returns a new Encoder.
+func New(w io.Writer) *Encoder {
 	return &Encoder{w}
 }
 

@@ -11,7 +11,7 @@ import (
 )
 
 func TestCamera(t *testing.T) {
-	camera, err := NewCamera(1)
+	camera, err := New(1)
 	if err != nil {
 		t.Fatal(err)
 	}

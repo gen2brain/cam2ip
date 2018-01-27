@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gen2brain/cam2ip/camera"
+	"github.com/gen2brain/cam2ip/encoder"
 )
 
 // MJPEG handler.
@@ -61,9 +62,7 @@ loop:
 				continue
 			}
 
-			enc := camera.NewEncoder(partWriter)
-
-			err = enc.Encode(img)
+			err = encoder.New(partWriter).Encode(img)
 			if err != nil {
 				log.Printf("mjpeg: encode: %v", err)
 				continue

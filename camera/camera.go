@@ -57,8 +57,8 @@ type Camera struct {
 	camera *opencv.Capture
 }
 
-// NewCamera returns new Camera for given camera index.
-func NewCamera(index int) (camera *Camera, err error) {
+// New returns new Camera for given camera index.
+func New(index int) (camera *Camera, err error) {
 	camera = &Camera{}
 	camera.Index = index
 

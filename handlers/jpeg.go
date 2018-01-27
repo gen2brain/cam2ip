@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gen2brain/cam2ip/camera"
+	"github.com/gen2brain/cam2ip/encoder"
 )
 
 // JPEG handler.
@@ -34,9 +35,7 @@ func (j *JPEG) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	enc := camera.NewEncoder(w)
-
-	err = enc.Encode(img)
+	err = encoder.New(w).Encode(img)
 	if err != nil {
 		log.Printf("jpeg: encode: %v", err)
 		return
