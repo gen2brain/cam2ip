@@ -21,7 +21,7 @@ func main() {
 	flag.IntVar(&srv.Delay, "delay", 10, "Delay between frames, in milliseconds")
 	flag.Float64Var(&srv.FrameWidth, "frame-width", 640, "Frame width")
 	flag.Float64Var(&srv.FrameHeight, "frame-height", 480, "Frame height")
-	flag.BoolVar(&srv.WebGL, "webgl", false, "Use WebGL to draw images")
+	flag.BoolVar(&srv.NoWebGL, "nowebgl", false, "Disable WebGL drawing of images (html handler)")
 	flag.StringVar(&srv.Bind, "bind-addr", ":56000", "Bind address")
 	flag.StringVar(&srv.Htpasswd, "htpasswd-file", "", "Path to htpasswd file, if empty auth is disabled")
 	flag.Parse()

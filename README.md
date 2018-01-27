@@ -46,8 +46,8 @@ Usage of ./cam2ip:
         Path to htpasswd file, if empty auth is disabled
   -index int
         Camera index
-  -webgl
-        Use WebGL to draw images
+  -nowebgl
+        Disable WebGL drawing of images (html handler)
 ```
 
 ### Handlers

@@ -13,7 +13,7 @@ type HTML struct {
 }
 
 // NewHTML returns new HTML handler.
-func NewHTML(bind string, width, height float64, gl bool) *HTML {
+func NewHTML(bind string, width, height float64, nogl bool) *HTML {
 	h := &HTML{}
 
 	b := strings.Split(bind, ":")
@@ -21,9 +21,9 @@ func NewHTML(bind string, width, height float64, gl bool) *HTML {
 		bind = "127.0.0.1" + bind
 	}
 
-	tpl := html
-	if gl {
-		tpl = htmlWebGL
+	tpl := htmlWebGL
+	if nogl {
+		tpl = html
 	}
 
 	tpl = strings.Replace(tpl, "{BIND}", bind, -1)
