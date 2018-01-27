@@ -18,10 +18,10 @@ or
 
 Binaries are compiled with static OpenCV library:
 
- - [Android 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.2/cam2ip-1.2-android.tar.gz)
- - [Linux 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.2/cam2ip-1.2-64bit.tar.gz)
- - [RPi 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.2/cam2ip-1.2-RPi.tar.gz)
- - [Windows 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.2/cam2ip-1.2.zip)
+ - [Linux 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.3/cam2ip-1.3-64bit.tar.gz)
+ - [RPi 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.3/cam2ip-1.3-RPi.tar.gz)
+ - [RPi3 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.3/cam2ip-1.3-RPi3.tar.gz)
+ - [Windows 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.3/cam2ip-1.3.zip)
 
 
 ### Installation
@@ -48,6 +48,8 @@ Usage of ./cam2ip:
         Camera index
   -nowebgl
         Disable WebGL drawing of images (html handler)
+  -video-file string
+    	Use video file instead of camera
 ```
 
 ### Handlers

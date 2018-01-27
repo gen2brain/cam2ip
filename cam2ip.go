@@ -12,7 +12,7 @@ import (
 
 const (
 	name    = "cam2ip"
-	version = "1.0"
+	version = "1.3"
 )
 
 func main() {
