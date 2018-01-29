@@ -12,6 +12,7 @@ or
 ### Requirements
 
 * [OpenCV 2.x](http://opencv.org/)
+* [libjpeg-turbo](https://www.libjpeg-turbo.org/)
 
 
 ### Download
