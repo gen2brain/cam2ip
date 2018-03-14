@@ -1,4 +1,4 @@
-// +build !cv3
+// +build cv3
 
 // Package video.
 package video
@@ -7,21 +7,21 @@ import (
 	"fmt"
 	"image"
 
-	"github.com/lazywei/go-opencv/opencv"
+	"gocv.io/x/gocv"
 )
 
 // Video represents video.
 type Video struct {
-	video *opencv.Capture
+	video *gocv.VideoCapture
 }
 
 // New returns new Video for given path.
 func New(filename string) (video *Video, err error) {
 	video = &Video{}
 
-	video.video = opencv.NewFileCapture(filename)
-	if video.video == nil {
-		err = fmt.Errorf("video: can not open video %s", filename)
+	video.video, err = gocv.VideoCaptureFile(filename)
+	if err != nil {
+		err = fmt.Errorf("video: can not open video %s: %s", filename, err.Error())
 	}
 
 	return
@@ -29,11 +29,19 @@ func New(filename string) (video *Video, err error) {
 
 // Read reads next frame from video and returns image.
 func (v *Video) Read() (img image.Image, err error) {
-	if v.video.GrabFrame() {
-		frame := v.video.RetrieveFrame(1)
-		img = frame.ToImage()
-	} else {
+	mat := gocv.NewMat()
+	defer mat.Close()
+
+	ok := v.video.Read(mat)
+	if !ok {
 		err = fmt.Errorf("video: can not grab frame")
+		return
+	}
+
+	img, e := mat.ToImage()
+	if e != nil {
+		err = fmt.Errorf("video: %v", e)
+		return
 	}
 
 	return
@@ -46,7 +54,7 @@ func (v *Video) Close() (err error) {
 		return
 	}
 
-	v.video.Release()
+	err = v.video.Close()
 	v.video = nil
 	return
 }

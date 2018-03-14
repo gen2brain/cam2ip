@@ -11,6 +11,7 @@ LIBRARY_PATH="$CHROOT/usr/lib:$CHROOT/lib" \
 PKG_CONFIG_PATH="$CHROOT/usr/lib/pkgconfig" \
 PKG_CONFIG_LIBDIR="$CHROOT/usr/lib/pkgconfig" \
 CGO_LDFLAGS="-L$CHROOT/usr/lib -L$CHROOT/lib" \
+CGO_CFLAGS="-I$CHROOT/usr/include" \
 CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -v -x -o build/cam2ip.linux.amd64 -ldflags "-linkmode external -s -w" github.com/gen2brain/cam2ip
 
 
