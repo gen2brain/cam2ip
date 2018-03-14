@@ -13,11 +13,15 @@ import (
 // Camera represents camera.
 type Camera struct {
 	camera *gocv.VideoCapture
+	frame  *gocv.Mat
 }
 
 // New returns new Camera for given camera index.
 func New(index int) (camera *Camera, err error) {
 	camera = &Camera{}
+
+	mat := gocv.NewMat()
+	camera.frame = &mat
 
 	camera.camera, err = gocv.VideoCaptureDevice(index)
 	if err != nil {
@@ -29,16 +33,13 @@ func New(index int) (camera *Camera, err error) {
 
 // Read reads next frame from camera and returns image.
 func (c *Camera) Read() (img image.Image, err error) {
-	mat := gocv.NewMat()
-	defer mat.Close()
-
-	ok := c.camera.Read(mat)
+	ok := c.camera.Read(*c.frame)
 	if !ok {
 		err = fmt.Errorf("camera: can not grab frame")
 		return
 	}
 
-	img, e := mat.ToImage()
+	img, e := c.frame.ToImage()
 	if e != nil {
 		err = fmt.Errorf("camera: %v", e)
 		return
@@ -64,6 +65,7 @@ func (c *Camera) Close() (err error) {
 		return
 	}
 
+	c.frame.Close()
 	err = c.camera.Close()
 	c.camera = nil
 	return

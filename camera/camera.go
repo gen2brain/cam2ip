@@ -13,6 +13,7 @@ import (
 // Camera represents camera.
 type Camera struct {
 	camera *opencv.Capture
+	frame  *opencv.IplImage
 }
 
 // New returns new Camera for given camera index.
@@ -30,8 +31,8 @@ func New(index int) (camera *Camera, err error) {
 // Read reads next frame from camera and returns image.
 func (c *Camera) Read() (img image.Image, err error) {
 	if c.camera.GrabFrame() {
-		frame := c.camera.RetrieveFrame(1)
-		img = frame.ToImage()
+		c.frame = c.camera.RetrieveFrame(1)
+		img = c.frame.ToImage()
 	} else {
 		err = fmt.Errorf("camera: can not grab frame")
 	}
@@ -56,6 +57,7 @@ func (c *Camera) Close() (err error) {
 		return
 	}
 
+	c.frame.Release()
 	c.camera.Release()
 	c.camera = nil
 	return

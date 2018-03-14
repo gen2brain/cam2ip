@@ -13,11 +13,15 @@ import (
 // Video represents video.
 type Video struct {
 	video *gocv.VideoCapture
+	frame *gocv.Mat
 }
 
 // New returns new Video for given path.
 func New(filename string) (video *Video, err error) {
 	video = &Video{}
+
+	mat := gocv.NewMat()
+	video.frame = &mat
 
 	video.video, err = gocv.VideoCaptureFile(filename)
 	if err != nil {
@@ -29,16 +33,13 @@ func New(filename string) (video *Video, err error) {
 
 // Read reads next frame from video and returns image.
 func (v *Video) Read() (img image.Image, err error) {
-	mat := gocv.NewMat()
-	defer mat.Close()
-
-	ok := v.video.Read(mat)
+	ok := v.video.Read(*v.frame)
 	if !ok {
 		err = fmt.Errorf("video: can not grab frame")
 		return
 	}
 
-	img, e := mat.ToImage()
+	img, e := v.frame.ToImage()
 	if e != nil {
 		err = fmt.Errorf("video: %v", e)
 		return
@@ -54,6 +55,7 @@ func (v *Video) Close() (err error) {
 		return
 	}
 
+	v.frame.Close()
 	err = v.video.Close()
 	v.video = nil
 	return

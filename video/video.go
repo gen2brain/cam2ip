@@ -13,6 +13,7 @@ import (
 // Video represents video.
 type Video struct {
 	video *opencv.Capture
+	frame *opencv.IplImage
 }
 
 // New returns new Video for given path.
@@ -30,8 +31,8 @@ func New(filename string) (video *Video, err error) {
 // Read reads next frame from video and returns image.
 func (v *Video) Read() (img image.Image, err error) {
 	if v.video.GrabFrame() {
-		frame := v.video.RetrieveFrame(1)
-		img = frame.ToImage()
+		v.frame = v.video.RetrieveFrame(1)
+		img = v.frame.ToImage()
 	} else {
 		err = fmt.Errorf("video: can not grab frame")
 	}
@@ -46,6 +47,7 @@ func (v *Video) Close() (err error) {
 		return
 	}
 
+	v.frame.Release()
 	v.video.Release()
 	v.video = nil
 	return
