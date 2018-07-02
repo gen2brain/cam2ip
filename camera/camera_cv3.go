@@ -33,7 +33,7 @@ func New(index int) (camera *Camera, err error) {
 
 // Read reads next frame from camera and returns image.
 func (c *Camera) Read() (img image.Image, err error) {
-	ok := c.camera.Read(*c.frame)
+	ok := c.camera.Read(c.frame)
 	if !ok {
 		err = fmt.Errorf("camera: can not grab frame")
 		return

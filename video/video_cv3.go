@@ -33,7 +33,7 @@ func New(filename string) (video *Video, err error) {
 
 // Read reads next frame from video and returns image.
 func (v *Video) Read() (img image.Image, err error) {
-	ok := v.video.Read(*v.frame)
+	ok := v.video.Read(v.frame)
 	if !ok {
 		err = fmt.Errorf("video: can not grab frame")
 		return
