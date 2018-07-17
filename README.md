@@ -12,7 +12,7 @@ or
 ### Requirements
 
 * [OpenCV](http://opencv.org/) (default is version 2.x via [go-opencv](https://github.com/lazywei/go-opencv), use `-tags cv3` for [gocv](https://github.com/hybridgroup/gocv))
-* [libjpeg-turbo](https://www.libjpeg-turbo.org/)
+* [libjpeg-turbo](https://www.libjpeg-turbo.org/) (use `-tags jpeg` for native image/jpeg)
 
 
 ### Download

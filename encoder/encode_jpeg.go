@@ -1,13 +1,12 @@
-// +build !jpeg
+// +build jpeg
 
 // Package encoder.
 package encoder
 
 import (
 	"image"
+	"image/jpeg"
 	"io"
-
-	jpeg "github.com/antonini/golibjpegturbo"
 )
 
 // New returns a new Encoder.
