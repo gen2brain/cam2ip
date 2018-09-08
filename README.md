@@ -12,12 +12,12 @@ or
 ### Requirements
 
 * [OpenCV](http://opencv.org/) (default is version 2.x via [go-opencv](https://github.com/lazywei/go-opencv), use `-tags cv3` for [gocv](https://github.com/hybridgroup/gocv))
-* [libjpeg-turbo](https://www.libjpeg-turbo.org/) (use `-tags jpeg` for native image/jpeg)
+* [libjpeg-turbo](https://www.libjpeg-turbo.org/) (use `-tags jpeg` for native image/jpeg, but note that CPU usage will be much higher)
 
 
 ### Download
 
-Binaries are compiled with static OpenCV library:
+Binaries are compiled with static OpenCV/libjpeg-turbo library, they should just work:
 
  - [Linux 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.3/cam2ip-1.3-64bit.tar.gz)
  - [RPi 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.3/cam2ip-1.3-RPi.tar.gz)
