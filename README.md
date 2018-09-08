@@ -17,7 +17,7 @@ or
 
 ### Download
 
-Binaries are compiled with static OpenCV/libjpeg-turbo library, they should just work:
+Binaries are compiled with static OpenCV/libjpeg-turbo libraries, they should just work:
 
  - [Linux 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.3/cam2ip-1.3-64bit.tar.gz)
  - [RPi 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.3/cam2ip-1.3-RPi.tar.gz)
