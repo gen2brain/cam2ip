@@ -12,7 +12,7 @@ import (
 
 const (
 	name    = "cam2ip"
-	version = "1.3"
+	version = "1.4"
 )
 
 func main() {
@@ -22,6 +22,7 @@ func main() {
 	flag.IntVar(&srv.Delay, "delay", 10, "Delay between frames, in milliseconds")
 	flag.Float64Var(&srv.FrameWidth, "width", 640, "Frame width")
 	flag.Float64Var(&srv.FrameHeight, "height", 480, "Frame height")
+	flag.IntVar(&srv.Rotate, "rotate", 0, "Rotate image, valid values are 90, 180, 270")
 	flag.BoolVar(&srv.NoWebGL, "nowebgl", false, "Disable WebGL drawing of images (html handler)")
 	flag.StringVar(&srv.Bind, "bind-addr", ":56000", "Bind address")
 	flag.StringVar(&srv.Htpasswd, "htpasswd-file", "", "Path to htpasswd file, if empty auth is disabled")
@@ -48,7 +49,7 @@ func main() {
 	}
 
 	if srv.FileName != "" {
-		vid, err := video.New(srv.FileName)
+		vid, err := video.New(video.Options{srv.FileName, srv.Rotate})
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 			os.Exit(1)
@@ -56,7 +57,7 @@ func main() {
 
 		srv.Reader = vid
 	} else {
-		cam, err := camera.New(srv.Index)
+		cam, err := camera.New(camera.Options{srv.Index, srv.Rotate})
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 			os.Exit(1)

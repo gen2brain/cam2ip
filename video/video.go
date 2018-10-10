@@ -7,22 +7,31 @@ import (
 	"fmt"
 	"image"
 
+	"github.com/disintegration/imaging"
 	"github.com/lazywei/go-opencv/opencv"
 )
 
+// Options.
+type Options struct {
+	Filename string
+	Rotate   int
+}
+
 // Video represents video.
 type Video struct {
+	opts  Options
 	video *opencv.Capture
 	frame *opencv.IplImage
 }
 
 // New returns new Video for given path.
-func New(filename string) (video *Video, err error) {
+func New(opts Options) (video *Video, err error) {
 	video = &Video{}
+	video.opts = opts
 
-	video.video = opencv.NewFileCapture(filename)
+	video.video = opencv.NewFileCapture(opts.Filename)
 	if video.video == nil {
-		err = fmt.Errorf("video: can not open video %s", filename)
+		err = fmt.Errorf("video: can not open video %s", opts.Filename)
 	}
 
 	return
@@ -32,7 +41,24 @@ func New(filename string) (video *Video, err error) {
 func (v *Video) Read() (img image.Image, err error) {
 	if v.video.GrabFrame() {
 		v.frame = v.video.RetrieveFrame(1)
+		if v.frame == nil {
+			err = fmt.Errorf("video: can not grab frame")
+			return
+		}
+
 		img = v.frame.ToImage()
+		if v.opts.Rotate == 0 {
+			return
+		}
+
+		switch v.opts.Rotate {
+		case 90:
+			img = imaging.Rotate90(img)
+		case 180:
+			img = imaging.Rotate180(img)
+		case 270:
+			img = imaging.Rotate270(img)
+		}
 	} else {
 		err = fmt.Errorf("video: can not grab frame")
 	}

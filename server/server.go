@@ -26,6 +26,8 @@ type Server struct {
 	FrameWidth  float64
 	FrameHeight float64
 
+	Rotate int
+
 	NoWebGL bool
 
 	FileName string

@@ -7,22 +7,31 @@ import (
 	"fmt"
 	"image"
 
+	"github.com/disintegration/imaging"
 	"github.com/lazywei/go-opencv/opencv"
 )
 
+// Options.
+type Options struct {
+	Index  int
+	Rotate int
+}
+
 // Camera represents camera.
 type Camera struct {
+	opts   Options
 	camera *opencv.Capture
 	frame  *opencv.IplImage
 }
 
 // New returns new Camera for given camera index.
-func New(index int) (camera *Camera, err error) {
+func New(opts Options) (camera *Camera, err error) {
 	camera = &Camera{}
+	camera.opts = opts
 
-	camera.camera = opencv.NewCameraCapture(index)
+	camera.camera = opencv.NewCameraCapture(opts.Index)
 	if camera.camera == nil {
-		err = fmt.Errorf("camera: can not open camera %d", index)
+		err = fmt.Errorf("camera: can not open camera %d", opts.Index)
 	}
 
 	return
@@ -32,7 +41,25 @@ func New(index int) (camera *Camera, err error) {
 func (c *Camera) Read() (img image.Image, err error) {
 	if c.camera.GrabFrame() {
 		c.frame = c.camera.RetrieveFrame(1)
+
+		if c.frame == nil {
+			err = fmt.Errorf("camera: can not grab frame")
+			return
+		}
+
 		img = c.frame.ToImage()
+		if c.opts.Rotate == 0 {
+			return
+		}
+
+		switch c.opts.Rotate {
+		case 90:
+			img = imaging.Rotate90(img)
+		case 180:
+			img = imaging.Rotate180(img)
+		case 270:
+			img = imaging.Rotate270(img)
+		}
 	} else {
 		err = fmt.Errorf("camera: can not grab frame")
 	}
