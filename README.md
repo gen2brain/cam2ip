@@ -24,11 +24,14 @@ or
 
 Binaries are compiled with static OpenCV/libjpeg-turbo libraries, they should just work:
 
- - [Linux 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.4/cam2ip-1.4-64bit.tar.gz)
- - [RPi 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.4/cam2ip-1.4-RPi.tar.gz)
- - [RPi3 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.4/cam2ip-1.4-RPi3.tar.gz)
- - [Windows 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.4/cam2ip-1.4.zip)
- - [Windows 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.4/cam2ip-1.4-64bit.zip)
+ - [Linux 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.5/cam2ip-1.5-64bit.tar.gz)
+ - [Linux 64bit native](https://github.com/gen2brain/cam2ip/releases/download/1.5/cam2ip-1.5-64bit-native.tar.gz)
+ - [RPi 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.5/cam2ip-1.5-RPi.tar.gz)
+ - [RPi 32bit native](https://github.com/gen2brain/cam2ip/releases/download/1.5/cam2ip-1.5-RPi-native.tar.gz)
+ - [RPi3 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.5/cam2ip-1.5-RPi3.tar.gz)
+ - [RPi3 32bit native](https://github.com/gen2brain/cam2ip/releases/download/1.5/cam2ip-1.5-RPi3-native.tar.gz)
+ - [Windows 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.5/cam2ip-1.5.zip)
+ - [Windows 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.5/cam2ip-1.5-64bit.zip)
 
 
 ### Installation
