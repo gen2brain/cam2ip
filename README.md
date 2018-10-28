@@ -16,7 +16,7 @@ or
 
 ### Build tags
 
-* `cv3` - build with OpenCV 3.x [gocv](https://github.com/hybridgroup/gocv), default is version 2.x via [go-opencv](https://github.com/lazywei/go-opencv)
+* `cv3` - build with `OpenCV` 3.x [gocv](https://github.com/hybridgroup/gocv), default is version 2.x via [go-opencv](https://github.com/lazywei/go-opencv)
 * `native` - build with native Go [V4L](https://github.com/korandiz/v4l) implementation on Linux/RPi instead of `OpenCV`
 * `jpeg` - build with native Go `image/jpeg` instead of `libjpeg-turbo`
 
