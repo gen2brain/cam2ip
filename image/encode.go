@@ -1,16 +1,17 @@
-// +build jpeg
+// +build !jpeg
 
-// Package encoder.
-package encoder
+// Package image.
+package image
 
 import (
 	"image"
-	"image/jpeg"
 	"io"
+
+	jpeg "github.com/antonini/golibjpegturbo"
 )
 
-// New returns a new Encoder.
-func New(w io.Writer) *Encoder {
+// NewEncoder returns a new Encoder.
+func NewEncoder(w io.Writer) *Encoder {
 	return &Encoder{w}
 }
 

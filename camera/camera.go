@@ -1,4 +1,4 @@
-// +build !cv3
+// +build !cv3,!native
 
 // Package camera.
 package camera
@@ -15,6 +15,8 @@ import (
 type Options struct {
 	Index  int
 	Rotate int
+	Width  float64
+	Height float64
 }
 
 // Camera represents camera.
@@ -34,6 +36,9 @@ func New(opts Options) (camera *Camera, err error) {
 		err = fmt.Errorf("camera: can not open camera %d", opts.Index)
 	}
 
+	camera.SetProperty(PropFrameWidth, opts.Width)
+	camera.SetProperty(PropFrameHeight, opts.Height)
+
 	return
 }
 
@@ -43,7 +48,7 @@ func (c *Camera) Read() (img image.Image, err error) {
 		c.frame = c.camera.RetrieveFrame(1)
 
 		if c.frame == nil {
-			err = fmt.Errorf("camera: can not grab frame")
+			err = fmt.Errorf("camera: can not retrieve frame")
 			return
 		}
 

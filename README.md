@@ -11,9 +11,14 @@ or
 
 ### Requirements
 
-* [OpenCV](http://opencv.org/) (default is version 2.x via [go-opencv](https://github.com/lazywei/go-opencv), use `-tags cv3` for [gocv](https://github.com/hybridgroup/gocv))
-* [libjpeg-turbo](https://www.libjpeg-turbo.org/) (use `-tags jpeg` for native image/jpeg, but note that CPU usage will be much higher)
+* [OpenCV](http://opencv.org/)
+* [libjpeg-turbo](https://www.libjpeg-turbo.org/)
 
+### Build tags
+
+* `cv3` - build with OpenCV 3.x [gocv](https://github.com/hybridgroup/gocv), default is version 2.x via [go-opencv](https://github.com/lazywei/go-opencv)
+* `native` - build with native Go [V4L](https://github.com/korandiz/v4l) implementation on Linux/RPi instead of `OpenCV`
+* `jpeg` - build with native Go `image/jpeg` instead of `libjpeg-turbo`
 
 ### Download
 

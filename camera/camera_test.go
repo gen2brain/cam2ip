@@ -11,7 +11,7 @@ import (
 )
 
 func TestCamera(t *testing.T) {
-	camera, err := New(1)
+	camera, err := New(Options{0, 0, 640, 480})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -24,18 +24,6 @@ func TestCamera(t *testing.T) {
 	}
 
 	defer os.RemoveAll(tmpdir)
-
-	var width, height float64 = 640, 480
-	camera.SetProperty(PropFrameWidth, width)
-	camera.SetProperty(PropFrameHeight, height)
-
-	if camera.GetProperty(PropFrameWidth) != width {
-		t.Error("FrameWidth not correct")
-	}
-
-	if camera.GetProperty(PropFrameHeight) != height {
-		t.Error("FrameHeight not correct")
-	}
 
 	var i int
 	var n int = 10

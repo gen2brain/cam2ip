@@ -10,7 +10,7 @@ import (
 
 	"golang.org/x/net/websocket"
 
-	"github.com/gen2brain/cam2ip/encoder"
+	"github.com/gen2brain/cam2ip/image"
 	"github.com/gen2brain/cam2ip/reader"
 )
 
@@ -37,7 +37,7 @@ func (s *Socket) write(ws *websocket.Conn) {
 
 		w := new(bytes.Buffer)
 
-		err = encoder.New(w).Encode(img)
+		err = image.NewEncoder(w).Encode(img)
 		if err != nil {
 			log.Printf("socket: encode: %v", err)
 			continue

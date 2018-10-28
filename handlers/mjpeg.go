@@ -9,7 +9,7 @@ import (
 	"net/textproto"
 	"time"
 
-	"github.com/gen2brain/cam2ip/encoder"
+	"github.com/gen2brain/cam2ip/image"
 	"github.com/gen2brain/cam2ip/reader"
 )
 
@@ -62,7 +62,7 @@ loop:
 				continue
 			}
 
-			err = encoder.New(partWriter).Encode(img)
+			err = image.NewEncoder(partWriter).Encode(img)
 			if err != nil {
 				log.Printf("mjpeg: encode: %v", err)
 				continue

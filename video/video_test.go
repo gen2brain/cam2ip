@@ -11,7 +11,7 @@ import (
 )
 
 func TestVideo(t *testing.T) {
-	video, err := New("test.mp4")
+	video, err := New(video.Options{"test.mp4", 0})
 	if err != nil {
 		t.Fatal(err)
 	}

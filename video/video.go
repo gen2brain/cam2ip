@@ -1,4 +1,4 @@
-// +build !cv3
+// +build !cv3,!native
 
 // Package video.
 package video
@@ -42,7 +42,7 @@ func (v *Video) Read() (img image.Image, err error) {
 	if v.video.GrabFrame() {
 		v.frame = v.video.RetrieveFrame(1)
 		if v.frame == nil {
-			err = fmt.Errorf("video: can not grab frame")
+			err = fmt.Errorf("video: can not retrieve frame")
 			return
 		}
 

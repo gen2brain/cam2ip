@@ -1,3 +1,5 @@
+// +build !native
+
 package camera
 
 // Property identifiers.
