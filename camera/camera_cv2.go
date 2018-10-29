@@ -1,4 +1,4 @@
-// +build !cv3,!native
+// +build cv2,!cv3
 
 // Package camera.
 package camera

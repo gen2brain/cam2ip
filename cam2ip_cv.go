@@ -1,4 +1,4 @@
-// +build native
+// +build cv2,cv3
 
 package main
 
@@ -9,11 +9,12 @@ import (
 
 	"github.com/gen2brain/cam2ip/camera"
 	"github.com/gen2brain/cam2ip/server"
+	"github.com/gen2brain/cam2ip/video"
 )
 
 const (
 	name    = "cam2ip"
-	version = "1.4"
+	version = "1.5"
 )
 
 func main() {
@@ -27,6 +28,7 @@ func main() {
 	flag.BoolVar(&srv.NoWebGL, "nowebgl", false, "Disable WebGL drawing of images (html handler)")
 	flag.StringVar(&srv.Bind, "bind-addr", ":56000", "Bind address")
 	flag.StringVar(&srv.Htpasswd, "htpasswd-file", "", "Path to htpasswd file, if empty auth is disabled")
+	flag.StringVar(&srv.FileName, "video-file", "", "Use video file instead of camera")
 	flag.Parse()
 
 	srv.Name = name
@@ -48,13 +50,23 @@ func main() {
 		}
 	}
 
-	cam, err := camera.New(camera.Options{srv.Index, srv.Rotate, srv.FrameWidth, srv.FrameHeight})
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err.Error())
-		os.Exit(1)
-	}
+	if srv.FileName != "" {
+		vid, err := video.New(video.Options{srv.FileName, srv.Rotate})
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+			os.Exit(1)
+		}
 
-	srv.Reader = cam
+		srv.Reader = vid
+	} else {
+		cam, err := camera.New(camera.Options{srv.Index, srv.Rotate, srv.FrameWidth, srv.FrameHeight})
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+			os.Exit(1)
+		}
+
+		srv.Reader = cam
+	}
 
 	defer srv.Reader.Close()
 
