@@ -12,9 +12,8 @@ or
 ### Requirements
 
 * [libjpeg-turbo](https://www.libjpeg-turbo.org/) (use `-tags jpeg` to build without `CGo`)
-
-On Linux/RPi native Go [V4L](https://github.com/korandiz/v4l) implementation is used to capture images.
-On Windows [Video for Windows (VfW)](https://en.wikipedia.org/wiki/Video_for_Windows) framework is used over win32 API.
+* On Linux/RPi native Go [V4L](https://github.com/korandiz/v4l) implementation is used to capture images.
+* On Windows [Video for Windows (VfW)](https://en.wikipedia.org/wiki/Video_for_Windows) framework is used over win32 API.
 
 ### Installation
 
