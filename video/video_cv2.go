@@ -8,7 +8,7 @@ import (
 	"image"
 
 	"github.com/disintegration/imaging"
-	"github.com/lazywei/go-opencv/opencv"
+	"github.com/gen2brain/go-opencv/opencv"
 )
 
 // Options.
