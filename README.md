@@ -48,6 +48,10 @@ Binaries are compiled with static OpenCV/libjpeg-turbo libraries, they should ju
 
 This will install app in `$GOPATH/bin/cam2ip`.
 
+### Run in Docker container
+
+    docker run --device=/dev/video0:/dev/video0 -p56000:56000 -it gen2brain/cam2ip
+
 ### Usage
 
 ```
