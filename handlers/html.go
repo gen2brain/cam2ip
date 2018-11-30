@@ -15,18 +15,11 @@ type HTML struct {
 // NewHTML returns new HTML handler.
 func NewHTML(bind string, width, height float64, nogl bool) *HTML {
 	h := &HTML{}
-
-	b := strings.Split(bind, ":")
-	if b[0] == "" {
-		bind = "127.0.0.1" + bind
-	}
-
+	
 	tpl := htmlWebGL
 	if nogl {
 		tpl = html
 	}
-
-	tpl = strings.Replace(tpl, "{BIND}", bind, -1)
 	tpl = strings.Replace(tpl, "{WIDTH}", fmt.Sprintf("%.0f", width), -1)
 	tpl = strings.Replace(tpl, "{HEIGHT}", fmt.Sprintf("%.0f", height), -1)
 
@@ -52,7 +45,7 @@ var html = `<html>
         <meta charset="utf-8"/>
         <title>cam2ip</title>
         <script>
-        ws = new WebSocket("ws://{BIND}/socket");
+        ws = new WebSocket("ws://" + window.location.host + "/socket");
         var image = new Image();
 
         ws.onopen = function() {
@@ -85,7 +78,7 @@ var htmlWebGL = `<html>
         <script>
 		var texture, vloc, tloc, vertexBuff, textureBuff;
 
-		ws = new WebSocket("ws://{BIND}/socket");
+		ws = new WebSocket("ws://" + window.location.host "/socket");
 		var image = new Image();
 
 		ws.onopen = function() {
