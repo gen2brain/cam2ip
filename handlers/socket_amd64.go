@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"bytes"
+	"encoding/base64"
 	"log"
 	"time"
 
-	"encoding/base64"
 	"golang.org/x/net/websocket"
 
 	"github.com/gen2brain/cam2ip/image"
