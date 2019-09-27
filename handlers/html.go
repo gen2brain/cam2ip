@@ -13,9 +13,9 @@ type HTML struct {
 }
 
 // NewHTML returns new HTML handler.
-func NewHTML(bind string, width, height float64, nogl bool) *HTML {
+func NewHTML(width, height float64, nogl bool) *HTML {
 	h := &HTML{}
-	
+
 	tpl := htmlWebGL
 	if nogl {
 		tpl = html
