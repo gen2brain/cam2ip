@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
+	"encoding/base64"
 	"golang.org/x/net/websocket"
-	"goost.org/encoding/base64"
 
 	"github.com/gen2brain/cam2ip/image"
 	"github.com/gen2brain/cam2ip/reader"
