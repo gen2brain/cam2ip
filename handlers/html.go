@@ -78,7 +78,7 @@ var htmlWebGL = `<html>
         <script>
 		var texture, vloc, tloc, vertexBuff, textureBuff;
 
-		ws = new WebSocket("ws://" + window.location.host "/socket");
+		ws = new WebSocket("ws://" + window.location.host + "/socket");
 		var image = new Image();
 
 		ws.onopen = function() {
