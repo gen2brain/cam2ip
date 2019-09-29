@@ -49,7 +49,7 @@ func (s *Server) ListenAndServe() error {
 		basic = auth.NewBasicAuthenticator(realm, auth.HtpasswdFileProvider(s.Htpasswd))
 	}
 
-	http.Handle("/html", newAuthHandler(handlers.NewHTML(s.Bind, s.FrameWidth, s.FrameHeight, s.NoWebGL), basic))
+	http.Handle("/html", newAuthHandler(handlers.NewHTML(s.FrameWidth, s.FrameHeight, s.NoWebGL), basic))
 	http.Handle("/jpeg", newAuthHandler(handlers.NewJPEG(s.Reader), basic))
 	http.Handle("/mjpeg", newAuthHandler(handlers.NewMJPEG(s.Reader, s.Delay), basic))
 

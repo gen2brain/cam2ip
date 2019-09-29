@@ -13,9 +13,9 @@ type HTML struct {
 }
 
 // NewHTML returns new HTML handler.
-func NewHTML(bind string, width, height float64, nogl bool) *HTML {
+func NewHTML(width, height float64, nogl bool) *HTML {
 	h := &HTML{}
-	
+
 	tpl := htmlWebGL
 	if nogl {
 		tpl = html
@@ -78,7 +78,7 @@ var htmlWebGL = `<html>
         <script>
 		var texture, vloc, tloc, vertexBuff, textureBuff;
 
-		ws = new WebSocket("ws://" + window.location.host "/socket");
+		ws = new WebSocket("ws://" + window.location.host + "/socket");
 		var image = new Image();
 
 		ws.onopen = function() {
