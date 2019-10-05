@@ -22,7 +22,7 @@ or
 ### Build tags
 
 * `cv2` - build with `OpenCV` 2.x ([go-opencv](https://github.com/lazywei/go-opencv))
-* `cv3` - build with `OpenCV` 3.x ([gocv](https://github.com/hybridgroup/gocv))
+* `cv4` - build with `OpenCV` 4.x ([gocv](https://github.com/hybridgroup/gocv))
 * `jpeg` - build with native Go `image/jpeg` instead of `libjpeg-turbo`
 
 ### Download
