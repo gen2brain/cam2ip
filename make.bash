@@ -28,7 +28,7 @@ PKG_CONFIG_LIBDIR="$MINGW/usr/lib/pkgconfig" \
 CGO_LDFLAGS="-L$MINGW/usr/lib" \
 CGO_CFLAGS="-I$MINGW/usr/include" \
 CC="i686-w64-mingw32-gcc" CXX="i686-w64-mingw32-g++" \
-CGO_ENABLED=1 GOOS=windows GOARCH=386 go build -tags cv2 -o build/cam2ip.386.cv2.exe -ldflags "-linkmode external -s -w '-extldflags=-static'" github.com/gen2brain/cam2ip
+CGO_ENABLED=1 GOOS=windows GOARCH=386 go build -tags "cv2 pkgconfig" -o build/cam2ip.386.cv2.exe -ldflags "-linkmode external -s -w '-extldflags=-static'" github.com/gen2brain/cam2ip
 
 PKG_CONFIG="/usr/bin/i686-w64-mingw32-pkg-config" \
 PKG_CONFIG_PATH="$MINGW/usr/lib/pkgconfig" \
@@ -44,7 +44,7 @@ PKG_CONFIG_LIBDIR="$MINGW64/usr/lib/pkgconfig" \
 CGO_LDFLAGS="-L$MINGW64/usr/lib" \
 CGO_CFLAGS="-I$MINGW64/usr/include" \
 CC="x86_64-w64-mingw32-gcc" CXX="x86_64-w64-mingw32-g++" \
-CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -tags cv2 -o build/cam2ip.amd64.cv2.exe -ldflags "-linkmode external -s -w '-extldflags=-static'" github.com/gen2brain/cam2ip
+CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -tags "cv2 pkgconfig" -o build/cam2ip.amd64.cv2.exe -ldflags "-linkmode external -s -w '-extldflags=-static'" github.com/gen2brain/cam2ip
 
 PKG_CONFIG="/usr/bin/x86_64-w64-mingw32-pkg-config" \
 PKG_CONFIG_PATH="$MINGW64/usr/lib/pkgconfig" \
