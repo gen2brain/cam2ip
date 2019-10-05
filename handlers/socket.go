@@ -1,14 +1,13 @@
-// +build !amd64
-
 package handlers
 
 import (
 	"bytes"
-	"encoding/base64"
+	"context"
 	"log"
+	"net/http"
 	"time"
 
-	"golang.org/x/net/websocket"
+	"nhooyr.io/websocket"
 
 	"github.com/gen2brain/cam2ip/image"
 	"github.com/gen2brain/cam2ip/reader"
@@ -21,13 +20,18 @@ type Socket struct {
 }
 
 // NewSocket returns new socket handler.
-func NewSocket(reader reader.ImageReader, delay int) websocket.Handler {
-	s := &Socket{reader, delay}
-	return websocket.Handler(s.write)
+func NewSocket(reader reader.ImageReader, delay int) *Socket {
+	return &Socket{reader, delay}
 }
 
-// write writes images to socket
-func (s *Socket) write(ws *websocket.Conn) {
+// ServeHTTP handles requests on incoming connections.
+func (s *Socket) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	conn, err := websocket.Accept(w, r, nil)
+	if err != nil {
+		log.Printf("socket: accept: %v", err)
+		return
+	}
+
 	for {
 		img, err := s.reader.Read()
 		if err != nil {
@@ -43,13 +47,15 @@ func (s *Socket) write(ws *websocket.Conn) {
 			continue
 		}
 
-		b64 := base64.StdEncoding.EncodeToString(w.Bytes())
+		b64 := image.EncodeToString(w.Bytes())
 
-		_, err = ws.Write([]byte(b64))
+		err = conn.Write(context.Background(), websocket.MessageText, []byte(b64))
 		if err != nil {
 			break
 		}
 
 		time.Sleep(time.Duration(s.delay) * time.Millisecond)
 	}
+
+	conn.Close(websocket.StatusNormalClosure, "")
 }

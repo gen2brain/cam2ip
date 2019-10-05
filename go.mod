@@ -9,9 +9,9 @@ require (
 	gocv.io/x/gocv v0.20.0
 	golang.org/x/crypto v0.0.0-20190927123631-a832865fa7ad // indirect
 	golang.org/x/image v0.0.0-20190910094157-69e4b8554b2a // indirect
-	golang.org/x/net v0.0.0-20190926025831-c00fd9afed17
-	golang.org/x/sys v0.0.0-20190927073244-c990c680b611 // indirect
+	golang.org/x/net v0.0.0-20190926025831-c00fd9afed17 // indirect
 	goost.org/encoding/base64 v0.0.0-20190928151742-cd6f75493c10
+	nhooyr.io/websocket v1.6.5
 )
 
 go 1.13
