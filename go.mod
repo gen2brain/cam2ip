@@ -5,7 +5,9 @@ require (
 	github.com/antonini/golibjpegturbo v0.0.0-20141208033414-c03a2fa1e89a
 	github.com/disintegration/imaging v1.6.1
 	github.com/gen2brain/go-opencv v0.0.0-20191005190506-bf186fc94f7a
+	github.com/jamiealquiza/envy v1.1.0
 	github.com/korandiz/v4l v0.0.0-20180520170035-995f703bfc89
+	github.com/spf13/cobra v0.0.5 // indirect
 	gocv.io/x/gocv v0.20.0
 	golang.org/x/crypto v0.0.0-20190927123631-a832865fa7ad // indirect
 	golang.org/x/image v0.0.0-20190910094157-69e4b8554b2a // indirect

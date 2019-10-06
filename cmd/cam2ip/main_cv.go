@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/jamiealquiza/envy"
+
 	"github.com/gen2brain/cam2ip/camera"
 	"github.com/gen2brain/cam2ip/server"
 	"github.com/gen2brain/cam2ip/video"
@@ -29,6 +31,8 @@ func main() {
 	flag.StringVar(&srv.Bind, "bind-addr", ":56000", "Bind address")
 	flag.StringVar(&srv.Htpasswd, "htpasswd-file", "", "Path to htpasswd file, if empty auth is disabled")
 	flag.StringVar(&srv.FileName, "video-file", "", "Use video file instead of camera")
+
+	envy.Parse("CAM2IP")
 	flag.Parse()
 
 	srv.Name = name

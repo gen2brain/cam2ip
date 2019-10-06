@@ -51,25 +51,25 @@ This will install app in `$GOPATH/bin/cam2ip`.
 ### Usage
 
 ```
-Usage of ./cam2ip:
+Usage of cam2ip:
   -bind-addr string
-        Bind address (default ":56000")
+	Bind address [CAM2IP_BIND_ADDR] (default ":56000")
   -delay int
-        Delay between frames, in milliseconds (default 10)
+	Delay between frames, in milliseconds [CAM2IP_DELAY] (default 10)
   -height float
-        Frame height (default 480)
-  -width float
-        Frame width (default 640)
+	Frame height [CAM2IP_HEIGHT] (default 480)
   -htpasswd-file string
-        Path to htpasswd file, if empty auth is disabled
+	Path to htpasswd file, if empty auth is disabled [CAM2IP_HTPASSWD_FILE]
   -index int
-        Camera index
+	Camera index [CAM2IP_INDEX]
   -nowebgl
-        Disable WebGL drawing of images (html handler)
+	Disable WebGL drawing of images (html handler) [CAM2IP_NOWEBGL]
   -rotate int
-    	Rotate image, valid values are 90, 180, 270
+	Rotate image, valid values are 90, 180, 270 [CAM2IP_ROTATE]
   -video-file string
-    	Use video file instead of camera
+	Use video file instead of camera [CAM2IP_VIDEO_FILE]
+  -width float
+	Frame width [CAM2IP_WIDTH] (default 640)
 ```
 
 ### Handlers
