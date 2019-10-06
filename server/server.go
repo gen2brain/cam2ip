@@ -58,9 +58,7 @@ func (s *Server) ListenAndServe() error {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
+	http.Handle("/", newAuthHandler(handlers.NewIndex(), basic))
 
 	srv := &http.Server{}
 
