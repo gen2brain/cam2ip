@@ -15,10 +15,6 @@ or
 * On Linux/RPi native Go [V4L](https://github.com/korandiz/v4l) implementation is used to capture images.
 * On Windows [Video for Windows (VfW)](https://en.wikipedia.org/wiki/Video_for_Windows) framework is used over win32 API.
 
-### Installation
-
-    go get -u github.com/gen2brain/cam2ip
-
 ### Build tags
 
 * `cv2` - build with `OpenCV` 2.x ([go-opencv](https://github.com/lazywei/go-opencv))
@@ -44,7 +40,7 @@ Binaries are compiled with static OpenCV/libjpeg-turbo libraries, they should ju
 
 ### Installation
 
-    go get -v github.com/gen2brain/cam2ip
+    go get -v github.com/gen2brain/cam2ip/cmd/cam2ip
 
 This will install app in `$GOPATH/bin/cam2ip`.
 
