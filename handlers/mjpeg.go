@@ -26,7 +26,7 @@ func NewMJPEG(reader reader.ImageReader, delay int) *MJPEG {
 
 // ServeHTTP handles requests on incoming connections.
 func (m *MJPEG) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
+	if r.Method != "GET" && r.Method != "HEAD" {
 		http.Error(w, "405 Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
