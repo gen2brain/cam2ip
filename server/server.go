@@ -52,8 +52,7 @@ func (s *Server) ListenAndServe() error {
 	http.Handle("/html", newAuthHandler(handlers.NewHTML(s.FrameWidth, s.FrameHeight, s.NoWebGL), basic))
 	http.Handle("/jpeg", newAuthHandler(handlers.NewJPEG(s.Reader), basic))
 	http.Handle("/mjpeg", newAuthHandler(handlers.NewMJPEG(s.Reader, s.Delay), basic))
-
-	http.Handle("/socket", handlers.NewSocket(s.Reader, s.Delay))
+	http.Handle("/socket", newAuthHandler(handlers.NewSocket(s.Reader, s.Delay), basic))
 
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
