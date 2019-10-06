@@ -1,3 +1,5 @@
+// +build !cv2,!cv4
+
 package main
 
 import (

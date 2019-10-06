@@ -1,4 +1,4 @@
-// +build cv2,cv4
+// +build cv2 cv4
 
 package main
 
