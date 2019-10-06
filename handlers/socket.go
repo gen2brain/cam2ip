@@ -32,6 +32,8 @@ func (s *Socket) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ctx := context.Background()
+
 	for {
 		img, err := s.reader.Read()
 		if err != nil {
@@ -49,7 +51,7 @@ func (s *Socket) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		b64 := image.EncodeToString(w.Bytes())
 
-		err = conn.Write(context.Background(), websocket.MessageText, []byte(b64))
+		err = conn.Write(ctx, websocket.MessageText, []byte(b64))
 		if err != nil {
 			break
 		}
