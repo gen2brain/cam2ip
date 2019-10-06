@@ -10,9 +10,8 @@ import (
 	"image/draw"
 	"time"
 
-	"github.com/pbnjay/pixfont"
-
 	"github.com/disintegration/imaging"
+	"github.com/pbnjay/pixfont"
 	"gocv.io/x/gocv"
 )
 

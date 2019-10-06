@@ -10,10 +10,9 @@ import (
 	"image/draw"
 	"time"
 
-	"github.com/pbnjay/pixfont"
-
 	"github.com/disintegration/imaging"
 	"github.com/gen2brain/go-opencv/opencv"
+	"github.com/pbnjay/pixfont"
 )
 
 // Camera represents camera.

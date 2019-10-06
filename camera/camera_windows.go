@@ -13,9 +13,8 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/pbnjay/pixfont"
-
 	"github.com/disintegration/imaging"
+	"github.com/pbnjay/pixfont"
 )
 
 // Camera represents camera.
