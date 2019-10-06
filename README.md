@@ -4,10 +4,13 @@ Turn any webcam into an IP camera.
 
 Example (in web browser):
 
-    http://localhost:56000/mjpeg
-or
-
     http://localhost:56000/html
+or
+    http://localhost:56000/mjpeg
+
+You can also use apps like `ffplay` or `vlc`:
+
+    ffplay -i http://localhost:56000/mjpeg
 
 ### Requirements
 
