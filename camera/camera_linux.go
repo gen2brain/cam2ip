@@ -14,14 +14,6 @@ import (
 	im "github.com/gen2brain/cam2ip/image"
 )
 
-// Options.
-type Options struct {
-	Index  int
-	Rotate int
-	Width  float64
-	Height float64
-}
-
 // Camera represents camera.
 type Camera struct {
 	opts   Options

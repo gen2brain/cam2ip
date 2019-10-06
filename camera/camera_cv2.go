@@ -11,14 +11,6 @@ import (
 	"github.com/gen2brain/go-opencv/opencv"
 )
 
-// Options.
-type Options struct {
-	Index  int
-	Rotate int
-	Width  float64
-	Height float64
-}
-
 // Camera represents camera.
 type Camera struct {
 	opts   Options

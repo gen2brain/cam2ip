@@ -11,14 +11,6 @@ import (
 	"gocv.io/x/gocv"
 )
 
-// Options.
-type Options struct {
-	Index  int
-	Rotate int
-	Width  float64
-	Height float64
-}
-
 // Camera represents camera.
 type Camera struct {
 	opts   Options
