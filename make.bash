@@ -5,6 +5,7 @@ MINGW="/usr/i686-w64-mingw32"
 MINGW64="/usr/x86_64-w64-mingw32"
 RPI="/usr/armv6j-hardfloat-linux-gnueabi"
 RPI3="/usr/armv7a-hardfloat-linux-gnueabi"
+APPLE="/usr/x86_64-apple-darwin14"
 
 mkdir -p build
 
@@ -93,3 +94,10 @@ CGO_LDFLAGS="-L$RPI3/usr/lib" \
 CGO_CFLAGS="-I$RPI3/usr/include" \
 CC="armv7a-hardfloat-linux-gnueabi-gcc" CXX="armv7a-hardfloat-linux-gnueabi-g++" \
 CGO_ENABLED=1 GOOS=linux GOARCH=arm go build -o build/cam2ip.linux.arm7 -ldflags "-linkmode external -s -w" github.com/gen2brain/cam2ip/cmd/cam2ip
+
+PKG_CONFIG_PATH="$APPLE/SDK/MacOSX10.10.sdk/usr/lib/pkgconfig" \
+PKG_CONFIG_LIBDIR="$APPLE/SDK/MacOSX10.10.sdk/usr/lib/pkgconfig" \
+CGO_LDFLAGS="-L$APPLE/SDK/MacOSX10.10.sdk/usr/lib -mmacosx-version-min=10.10" \
+CGO_CFLAGS="-I$APPLE/SDK/MacOSX10.10.sdk/usr/include -mmacosx-version-min=10.10" \
+CC="$APPLE/bin/x86_64-apple-darwin14-clang" CXX="$APPLE/bin/x86_64-apple-darwin14-clang++" \
+CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -tags cv2 -o build/cam2ip.darwin.amd64 -ldflags "-linkmode external -s -w '-extldflags=-mmacosx-version-min=10.10'" github.com/gen2brain/cam2ip/cmd/cam2ip

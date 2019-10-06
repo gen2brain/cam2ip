@@ -32,6 +32,7 @@ Binaries are compiled with static OpenCV/libjpeg-turbo libraries, they should ju
 
  - [Linux 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-64bit.tar.gz)
  - [Linux 64bit OpenCV](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-64bit-cv2.tar.gz)
+ - [macOS 64bit OpenCV](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-darwin-cv2.zip)
  - [RPi 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-RPi.tar.gz)
  - [RPi 32bit OpenCV](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-RPi-cv2.tar.gz)
  - [RPi 32bit Static](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-RPi-nocgo.tar.gz)
