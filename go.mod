@@ -7,6 +7,7 @@ require (
 	github.com/gen2brain/go-opencv v0.0.0-20191005190506-bf186fc94f7a
 	github.com/jamiealquiza/envy v1.1.0
 	github.com/korandiz/v4l v0.0.0-20180520170035-995f703bfc89
+	github.com/pbnjay/pixfont v0.0.0-20190130005054-401bb7c6aee2
 	github.com/spf13/cobra v0.0.5 // indirect
 	gocv.io/x/gocv v0.20.0
 	golang.org/x/crypto v0.0.0-20190927123631-a832865fa7ad // indirect

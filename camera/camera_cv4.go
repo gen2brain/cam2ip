@@ -6,6 +6,11 @@ package camera
 import (
 	"fmt"
 	"image"
+	"image/color"
+	"image/draw"
+	"time"
+
+	"github.com/pbnjay/pixfont"
 
 	"github.com/disintegration/imaging"
 	"gocv.io/x/gocv"
@@ -56,10 +61,6 @@ func (c *Camera) Read() (img image.Image, err error) {
 		return
 	}
 
-	if c.opts.Rotate == 0 {
-		return
-	}
-
 	switch c.opts.Rotate {
 	case 90:
 		img = imaging.Rotate90(img)
@@ -67,6 +68,17 @@ func (c *Camera) Read() (img image.Image, err error) {
 		img = imaging.Rotate180(img)
 	case 270:
 		img = imaging.Rotate270(img)
+	}
+
+	if c.opts.Timestamp {
+		dimg, ok := img.(draw.Image)
+		if !ok {
+			err = fmt.Errorf("camera: %T is not a drawable image type", img)
+			return
+		}
+
+		pixfont.DrawString(dimg, 10, 10, time.Now().Format("2006-01-02 15:04:05"), color.White)
+		img = dimg
 	}
 
 	return

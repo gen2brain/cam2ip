@@ -28,7 +28,8 @@ type Server struct {
 
 	Rotate int
 
-	NoWebGL bool
+	NoWebGL   bool
+	Timestamp bool
 
 	FileName string
 

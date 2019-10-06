@@ -28,6 +28,7 @@ func main() {
 	flag.Float64Var(&srv.FrameHeight, "height", 480, "Frame height")
 	flag.IntVar(&srv.Rotate, "rotate", 0, "Rotate image, valid values are 90, 180, 270")
 	flag.BoolVar(&srv.NoWebGL, "nowebgl", false, "Disable WebGL drawing of images (html handler)")
+	flag.BoolVar(&srv.Timestamp, "timestamp", false, "Draws timestamp on images")
 	flag.StringVar(&srv.Bind, "bind-addr", ":56000", "Bind address")
 	flag.StringVar(&srv.Htpasswd, "htpasswd-file", "", "Path to htpasswd file, if empty auth is disabled")
 	flag.StringVar(&srv.FileName, "video-file", "", "Use video file instead of camera")
@@ -63,7 +64,7 @@ func main() {
 
 		srv.Reader = vid
 	} else {
-		cam, err := camera.New(camera.Options{srv.Index, srv.Rotate, srv.FrameWidth, srv.FrameHeight})
+		cam, err := camera.New(camera.Options{srv.Index, srv.Rotate, srv.FrameWidth, srv.FrameHeight, srv.Timestamp})
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 			os.Exit(1)

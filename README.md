@@ -66,6 +66,8 @@ Usage of cam2ip:
 	Disable WebGL drawing of images (html handler) [CAM2IP_NOWEBGL]
   -rotate int
 	Rotate image, valid values are 90, 180, 270 [CAM2IP_ROTATE]
+  -timestamp
+	Draws timestamp on images [CAM2IP_TIMESTAMP]
   -video-file string
 	Use video file instead of camera [CAM2IP_VIDEO_FILE]
   -width float
