@@ -6,6 +6,7 @@ MINGW64="/usr/x86_64-w64-mingw32"
 RPI="/usr/armv6j-hardfloat-linux-gnueabi"
 RPI3="/usr/armv7a-hardfloat-linux-gnueabi"
 APPLE="/usr/x86_64-apple-darwin14"
+ANDROID="/usr/arm-linux-androideabi"
 
 mkdir -p build
 
@@ -101,3 +102,10 @@ CGO_LDFLAGS="-L$APPLE/SDK/MacOSX10.10.sdk/usr/lib -mmacosx-version-min=10.10" \
 CGO_CFLAGS="-I$APPLE/SDK/MacOSX10.10.sdk/usr/include -mmacosx-version-min=10.10" \
 CC="$APPLE/bin/x86_64-apple-darwin14-clang" CXX="$APPLE/bin/x86_64-apple-darwin14-clang++" \
 CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -tags cv2 -o build/cam2ip.darwin.amd64 -ldflags "-linkmode external -s -w '-extldflags=-mmacosx-version-min=10.10'" github.com/gen2brain/cam2ip/cmd/cam2ip
+
+PKG_CONFIG_PATH="$ANDROID/lib/pkgconfig" \
+PKG_CONFIG_LIBDIR="$ANDROID/lib/pkgconfig" \
+CGO_LDFLAGS="-L$ANDROID/sysroot/usr/lib" \
+CGO_CFLAGS="-I$ANDROID/sysroot/usr/include --sysroot=$ANDROID/sysroot" \
+CC="$ANDROID/bin/arm-linux-androideabi-clang" CXX="$ANDROID/bin/arm-linux-androideabi-clang++" \
+CGO_ENABLED=1 GOOS=android GOARCH=arm go build -tags jpeg -o build/cam2ip.android.arm7 -ldflags "-linkmode external -s -w" github.com/gen2brain/cam2ip/cmd/cam2ip
