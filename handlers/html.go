@@ -82,7 +82,7 @@ var htmlWebGL = `<html>
 		var image = new Image();
 
 		ws.onopen = function() {
-			var gl = document.getElementById('canvas').getContext('webgl');
+			var gl = canvas.getContext("webgl",{antialias:false}) || canvas.getContext("experimental-webgl");
 
 			var vertexShaderSrc =
 				"attribute vec2 aVertex;" +
