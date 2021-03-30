@@ -60,14 +60,8 @@ var html = `<html>
         }
         </script>
     </head>
-    <body style="background-color: #000000">
-        <table style="width:100%; height:100%">
-            <tr style="height:100%">
-                <td style="height:100%; text-align:center">
-                    <canvas id="canvas" width="{WIDTH}" height="{HEIGHT}"></canvas>
-                </td>
-           </tr>
-        </table>
+    <body style="background: #000000; display: flex; flex-direction: column; align-items: center; justify-contant: center; width: 100%; height: 100%; text-align:center;">
+        <canvas id="canvas" width="{WIDTH}" height="{HEIGHT}"></canvas>
     </body>
 </html>`
 
@@ -158,13 +152,7 @@ var htmlWebGL = `<html>
 		}
         </script>
     </head>
-    <body style="background-color: #000000">
-        <table style="width:100%; height:100%">
-            <tr style="height:100%">
-                <td style="height:100%; text-align:center">
-                    <canvas id="canvas" width="{WIDTH}" height="{HEIGHT}"></canvas>
-                </td>
-           </tr>
-        </table>
+    <body style="background: #000000; display: flex; flex-direction: column; align-items: center; justify-contant: center; width: 100%; height: 100%; text-align:center;">
+        <canvas id="canvas" width="{WIDTH}" height="{HEIGHT}"></canvas>
     </body>
 </html>`
