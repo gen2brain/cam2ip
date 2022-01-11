@@ -53,7 +53,7 @@ func main() {
 		}
 	}
 
-	cam, err := camera.New(camera.Options{srv.Index, srv.Rotate, srv.FrameWidth, srv.FrameHeight, srv.Timestamp})
+	cam, err := camera.New(camera.Options{Index: srv.Index, Rotate: srv.Rotate, Width: srv.FrameWidth, Height: srv.FrameHeight, Timestamp: srv.Timestamp})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 		os.Exit(1)
