@@ -1,3 +1,4 @@
+//go:build !jpeg
 // +build !jpeg
 
 // Package image.

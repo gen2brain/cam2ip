@@ -1,3 +1,4 @@
+//go:build !cv2 && !cv4 && !android
 // +build !cv2,!cv4,!android
 
 // Package camera.
