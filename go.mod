@@ -1,5 +1,7 @@
 module github.com/gen2brain/cam2ip
 
+replace nhooyr.io/websocket => github.com/rymdport/websocket v1.9.0
+
 require (
 	github.com/abbot/go-http-auth v0.4.0
 	github.com/antonini/golibjpegturbo v0.0.0-20141208033414-c03a2fa1e89a
@@ -9,19 +11,19 @@ require (
 	github.com/jamiealquiza/envy v1.1.0
 	github.com/korandiz/v4l v1.1.0
 	github.com/pbnjay/pixfont v0.0.0-20200714042608-33b744692567
-	gocv.io/x/gocv v0.31.0
+	gocv.io/x/gocv v0.32.1
 	nhooyr.io/websocket v1.8.7
 )
 
 require (
-	github.com/inconshreveable/mousetrap v1.0.1 // indirect
-	github.com/klauspost/compress v1.15.11 // indirect
-	github.com/spf13/cobra v1.6.0 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/klauspost/compress v1.15.15 // indirect
+	github.com/spf13/cobra v1.6.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	golang.org/x/crypto v0.0.0-20221012134737-56aed061732a // indirect
-	golang.org/x/image v0.0.0-20220902085622-e7cb96979f69 // indirect
-	golang.org/x/net v0.0.0-20221014081412-f15817d10f9b // indirect
-	golang.org/x/sys v0.0.0-20221013171732-95e765b1cc43 // indirect
+	golang.org/x/crypto v0.5.0 // indirect
+	golang.org/x/image v0.3.0 // indirect
+	golang.org/x/net v0.5.0 // indirect
+	golang.org/x/sys v0.4.0 // indirect
 )
 
 go 1.19
