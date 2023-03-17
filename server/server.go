@@ -63,7 +63,7 @@ func (s *Server) ListenAndServe() error {
 
 	srv := &http.Server{}
 
-	listener, err := net.Listen("tcp4", s.Bind)
+	listener, err := net.Listen("tcp", s.Bind)
 	if err != nil {
 		return err
 	}
