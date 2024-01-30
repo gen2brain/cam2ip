@@ -1,5 +1,5 @@
-//go:build !jpeg
-// +build !jpeg
+//go:build turbo
+// +build turbo
 
 // Package image.
 package image

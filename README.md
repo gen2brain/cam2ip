@@ -16,7 +16,6 @@ You can also use apps like `ffplay` or `vlc`:
 
 ### Requirements
 
-* [libjpeg-turbo](https://www.libjpeg-turbo.org/) (use `-tags jpeg` to build without `CGo`)
 * On Linux/RPi native Go [V4L](https://github.com/korandiz/v4l) implementation is used to capture images.
 * On Windows [Video for Windows (VfW)](https://en.wikipedia.org/wiki/Video_for_Windows) framework is used over win32 API.
 
@@ -24,7 +23,7 @@ You can also use apps like `ffplay` or `vlc`:
 
 * `cv2` - build with `OpenCV` 2.x ([go-opencv](https://github.com/lazywei/go-opencv))
 * `cv4` - build with `OpenCV` 4.x ([gocv](https://github.com/hybridgroup/gocv))
-* `jpeg` - build with native Go `image/jpeg` instead of `libjpeg-turbo`
+* `turbo` - build with `libjpeg-turbo` ([libjpeg-turbo](https://www.libjpeg-turbo.org/)) instead of native Go `image/jpeg`
 
 ### Download
 
@@ -74,8 +73,6 @@ Usage of cam2ip:
 	Rotate image, valid values are 90, 180, 270 [CAM2IP_ROTATE]
   -timestamp
 	Draws timestamp on images [CAM2IP_TIMESTAMP]
-  -video-file string
-	Use video file instead of camera [CAM2IP_VIDEO_FILE]
   -width float
 	Frame width [CAM2IP_WIDTH] (default 640)
 ```
