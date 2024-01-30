@@ -10,17 +10,17 @@ ANDROID="/usr/arm-linux-androideabi"
 
 mkdir -p build
 
-LIBRARY_PATH="$CHROOT/usr/lib:$CHROOT/lib" \
-PKG_CONFIG_PATH="$CHROOT/usr/lib/pkgconfig" \
-PKG_CONFIG_LIBDIR="$CHROOT/usr/lib/pkgconfig" \
-CGO_LDFLAGS="-L$CHROOT/usr/lib -L$CHROOT/lib" \
+LIBRARY_PATH="$CHROOT/usr/lib64:$CHROOT/lib64" \
+PKG_CONFIG_PATH="$CHROOT/usr/lib64/pkgconfig" \
+PKG_CONFIG_LIBDIR="$CHROOT/usr/lib64/pkgconfig" \
+CGO_LDFLAGS="-L$CHROOT/usr/lib64 -L$CHROOT/lib" \
 CGO_CFLAGS="-I$CHROOT/usr/include" \
 CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -tags cv2,turbo -o build/cam2ip.linux.amd64.cv2 -ldflags "-linkmode external -s -w" github.com/gen2brain/cam2ip/cmd/cam2ip
 
-LIBRARY_PATH="$CHROOT/usr/lib:$CHROOT/lib" \
-PKG_CONFIG_PATH="$CHROOT/usr/lib/pkgconfig" \
-PKG_CONFIG_LIBDIR="$CHROOT/usr/lib/pkgconfig" \
-CGO_LDFLAGS="-L$CHROOT/usr/lib -L$CHROOT/lib" \
+LIBRARY_PATH="$CHROOT/usr/lib64:$CHROOT/lib64" \
+PKG_CONFIG_PATH="$CHROOT/usr/lib64/pkgconfig" \
+PKG_CONFIG_LIBDIR="$CHROOT/usr/lib64/pkgconfig" \
+CGO_LDFLAGS="-L$CHROOT/usr/lib64 -L$CHROOT/lib64" \
 CGO_CFLAGS="-I$CHROOT/usr/include" \
 CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o build/cam2ip.linux.amd64 -ldflags "-linkmode external -s -w" github.com/gen2brain/cam2ip/cmd/cam2ip
 

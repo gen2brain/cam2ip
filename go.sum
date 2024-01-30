@@ -7,8 +7,8 @@ github.com/disintegration/imaging v1.6.2 h1:w1LecBlG2Lnp8B3jk5zSuNqd7b4DXhcjwek1
 github.com/disintegration/imaging v1.6.2/go.mod h1:44/5580QXChDfwIclfc/PCwrr44amcmDAg8hxG0Ewe4=
 github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c h1:TUjjeJ2rV4KZxH6hIEi/boEQB3v6aKvwdakUJR3AwiE=
 github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c/go.mod h1:VG58IUyxPWojCtGwqwoZ/6LLXwClu1tssqa5ktOxI9o=
-github.com/go-opencv/go-opencv v0.0.0-20190115070742-a4fe8ec027cc h1:4FHjtvOsr1M3WwN6sRm6Iuvxa9gtu2cwAI/vMXK+7rs=
-github.com/go-opencv/go-opencv v0.0.0-20190115070742-a4fe8ec027cc/go.mod h1:CJDlJ8IGjqEnaJZE1MaUF3eL0EWayFGwM0Eqb6i9l3I=
+github.com/gen2brain/go-opencv v0.0.0-20191005190506-bf186fc94f7a h1:0arrt5Ke40opD5glNdh9ltrkZ0jaqPWsquGPSE3ukug=
+github.com/gen2brain/go-opencv v0.0.0-20191005190506-bf186fc94f7a/go.mod h1:pOLh42huXUuMoJWvD2K+EeXzvQ9GZ5HN6gdFk5ZwIuU=
 github.com/hybridgroup/mjpeg v0.0.0-20140228234708-4680f319790e/go.mod h1:eagM805MRKrioHYuU7iKLUyFPVKqVV6um5DAvCkUtXs=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
