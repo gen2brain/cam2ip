@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/disintegration/imaging"
-	"github.com/gen2brain/go-opencv/opencv"
+	"github.com/go-opencv/go-opencv/opencv"
 	"github.com/pbnjay/pixfont"
 )
 
