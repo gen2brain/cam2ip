@@ -3,7 +3,6 @@ package camera
 import (
 	"fmt"
 	"image/jpeg"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -18,15 +17,15 @@ func TestCamera(t *testing.T) {
 
 	defer camera.Close()
 
-	tmpdir, err := ioutil.TempDir(os.TempDir(), "cam2ip")
+	tmpdir, err := os.MkdirTemp(os.TempDir(), "cam2ip*")
 	if err != nil {
 		t.Error(err)
 	}
 
 	defer os.RemoveAll(tmpdir)
 
-	var i int
-	var n int = 10
+	var i int64
+	var n = 10
 
 	timeout := time.After(time.Duration(n) * time.Second)
 

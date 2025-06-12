@@ -9,13 +9,18 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	"runtime"
 	"syscall"
 	"time"
 	"unsafe"
 
-	"github.com/disintegration/imaging"
+	"github.com/anthonynsimon/bild/transform"
 	"github.com/pbnjay/pixfont"
 )
+
+func init() {
+	runtime.LockOSThread()
+}
 
 // Camera represents camera.
 type Camera struct {
@@ -44,7 +49,7 @@ func New(opts Options) (camera *Camera, err error) {
 		fn := func(hwnd syscall.Handle, msg uint32, wparam, lparam uintptr) uintptr {
 			switch msg {
 			case wmClose:
-				destroyWindow(hwnd)
+				_ = destroyWindow(hwnd)
 			case wmDestroy:
 				postQuitMessage(0)
 			default:
@@ -71,7 +76,7 @@ func New(opts Options) (camera *Camera, err error) {
 		}
 
 		ret := sendMessage(c.camera, wmCapDriverConnect, uintptr(c.opts.Index), 0)
-		if bool(int(ret) == 0) {
+		if int(ret) == 0 {
 			err = fmt.Errorf("camera: can not open camera %d", c.opts.Index)
 			return
 		}
@@ -84,7 +89,7 @@ func New(opts Options) (camera *Camera, err error) {
 		bi.BmiHeader.BiHeight = int32(c.opts.Height)
 
 		ret = sendMessage(c.camera, wmCapSetVideoformat, size, uintptr(unsafe.Pointer(&bi)))
-		if bool(int(ret) == 0) {
+		if int(ret) == 0 {
 			err = fmt.Errorf("camera: can not set video format")
 			return
 		}
@@ -136,11 +141,11 @@ func (c *Camera) Read() (img image.Image, err error) {
 
 	switch c.opts.Rotate {
 	case 90:
-		img = imaging.Rotate90(img)
+		img = transform.Rotate(img, 90, &transform.RotationOptions{ResizeBounds: true})
 	case 180:
-		img = imaging.Rotate180(img)
+		img = transform.Rotate(img, 180, &transform.RotationOptions{ResizeBounds: true})
 	case 270:
-		img = imaging.Rotate270(img)
+		img = transform.Rotate(img, 270, &transform.RotationOptions{ResizeBounds: true})
 	}
 
 	if c.opts.Timestamp {
@@ -172,13 +177,14 @@ func (c *Camera) Close() (err error) {
 	sendMessage(c.camera, wmCapSetCallbackFrame, 0, 0)
 	unregisterClass(c.className, c.instance)
 	sendMessage(c.camera, wmCapDriverDisconnect, 0, 0)
-	destroyWindow(c.camera)
-	return
+
+	return destroyWindow(c.camera)
 }
 
 // callback function.
-func (c *Camera) callback(hwvd syscall.Handle, hdr *videoHdr) uintptr {
+func (c *Camera) callback(hwnd syscall.Handle, hdr *videoHdr) uintptr {
 	c.hdr = hdr
+
 	return 0
 }
 

@@ -10,7 +10,7 @@ import (
 	"image/draw"
 	"time"
 
-	"github.com/disintegration/imaging"
+	"github.com/anthonynsimon/bild/transform"
 	"github.com/korandiz/v4l"
 	"github.com/korandiz/v4l/fmt/mjpeg"
 	"github.com/pbnjay/pixfont"
@@ -102,11 +102,11 @@ func (c *Camera) Read() (img image.Image, err error) {
 
 	switch c.opts.Rotate {
 	case 90:
-		img = imaging.Rotate90(img)
+		img = transform.Rotate(img, 90, &transform.RotationOptions{ResizeBounds: true})
 	case 180:
-		img = imaging.Rotate180(img)
+		img = transform.Rotate(img, 180, &transform.RotationOptions{ResizeBounds: true})
 	case 270:
-		img = imaging.Rotate270(img)
+		img = transform.Rotate(img, 270, &transform.RotationOptions{ResizeBounds: true})
 	}
 
 	if c.opts.Timestamp {
@@ -131,7 +131,7 @@ func (c *Camera) GetProperty(id int) float64 {
 
 // SetProperty sets a camera property.
 func (c *Camera) SetProperty(id int, value float64) {
-	c.camera.SetControl(uint32(id), int32(value))
+	_ = c.camera.SetControl(uint32(id), int32(value))
 }
 
 // Close closes camera.

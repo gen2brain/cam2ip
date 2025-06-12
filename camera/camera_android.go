@@ -1,5 +1,4 @@
 //go:build android
-// +build android
 
 // Package camera.
 package camera
@@ -241,7 +240,7 @@ func New(opts Options) (camera *Camera, err error) {
 	camera.img = image.NewYCbCr(image.Rect(0, 0, int(opts.Width), int(opts.Height)), image.YCbCrSubsampleRatio420)
 
 	ret := C.openCamera(C.int(opts.Index), C.int(opts.Width), C.int(opts.Height))
-	if bool(int(ret) != 0) {
+	if int(ret) != 0 {
 		err = fmt.Errorf("camera: can not open camera %d: error %d", opts.Index, int(ret))
 		return
 	}
@@ -252,13 +251,15 @@ func New(opts Options) (camera *Camera, err error) {
 // Read reads next frame from camera and returns image.
 func (c *Camera) Read() (img image.Image, err error) {
 	ret := C.captureCamera()
-	if bool(int(ret) != 0) {
+	if int(ret) != 0 {
 		err = fmt.Errorf("camera: can not grab frame: error %d", int(ret))
+	
 		return
 	}
 
 	if C.image == nil {
 		err = fmt.Errorf("camera: can not retrieve frame")
+
 		return
 	}
 
@@ -295,8 +296,9 @@ func (c *Camera) SetProperty(id int, value float64) {
 // Close closes camera.
 func (c *Camera) Close() (err error) {
 	ret := C.closeCamera()
-	if bool(int(ret) != 0) {
+	if int(ret) != 0 {
 		err = fmt.Errorf("camera: can not close camera %d: error %d", c.opts.Index, int(ret))
+
 		return
 	}
 

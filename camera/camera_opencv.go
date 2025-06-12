@@ -10,7 +10,7 @@ import (
 	"image/draw"
 	"time"
 
-	"github.com/disintegration/imaging"
+	"github.com/anthonynsimon/bild/transform"
 	"github.com/pbnjay/pixfont"
 	"gocv.io/x/gocv"
 )
@@ -105,11 +105,11 @@ func (c *Camera) Read() (img image.Image, err error) {
 
 	switch c.opts.Rotate {
 	case 90:
-		img = imaging.Rotate90(img)
+		img = transform.Rotate(img, 90, &transform.RotationOptions{ResizeBounds: true})
 	case 180:
-		img = imaging.Rotate180(img)
+		img = transform.Rotate(img, 180, &transform.RotationOptions{ResizeBounds: true})
 	case 270:
-		img = imaging.Rotate270(img)
+		img = transform.Rotate(img, 270, &transform.RotationOptions{ResizeBounds: true})
 	}
 
 	if c.opts.Timestamp {
