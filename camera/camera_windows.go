@@ -1,5 +1,4 @@
-//go:build !cv2 && !cv4
-// +build !cv2,!cv4
+//go:build !opencv
 
 // Package camera.
 package camera

@@ -1,5 +1,4 @@
-//go:build !cv2 && !cv4 && !android
-// +build !cv2,!cv4,!android
+//go:build !opencv && !android
 
 // Package camera.
 package camera
@@ -17,6 +16,20 @@ import (
 	"github.com/pbnjay/pixfont"
 
 	im "github.com/gen2brain/cam2ip/image"
+)
+
+// Property identifiers.
+const (
+	PropBrightness    = v4l.CtrlBrightness
+	PropContrast      = v4l.CtrlContrast
+	PropSaturation    = v4l.CtrlSaturation
+	PropHue           = v4l.CtrlHue
+	PropGain          = v4l.CtrlGain
+	PropExposure      = v4l.CtrlExposure
+	PropWhiteBalanceU = v4l.CtrlWhiteBalance
+	PropSharpness     = v4l.CtrlSharpness
+	PropWhiteBalanceV = v4l.CtrlDoWhiteBalance
+	PropBacklight     = v4l.CtrlBacklightCompensation
 )
 
 // Camera represents camera.

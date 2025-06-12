@@ -1,5 +1,4 @@
-//go:build cv2 && !cv4
-// +build cv2,!cv4
+//go:build opencv
 
 // Package camera.
 package camera
@@ -12,15 +11,58 @@ import (
 	"time"
 
 	"github.com/disintegration/imaging"
-	"github.com/gen2brain/go-opencv/opencv"
 	"github.com/pbnjay/pixfont"
+	"gocv.io/x/gocv"
+)
+
+// Property identifiers.
+const (
+	PropPosMsec = iota
+	PropPosFrames
+	PropPosAviRatio
+	PropFrameWidth
+	PropFrameHeight
+	PropFps
+	PropFourcc
+	PropFrameCount
+	PropFormat
+	PropMode
+	PropBrightness
+	PropContrast
+	PropSaturation
+	PropHue
+	PropGain
+	PropExposure
+	PropConvertRgb
+	PropWhiteBalanceU
+	PropRectification
+	PropMonocrome
+	PropSharpness
+	PropAutoExposure
+	PropGamma
+	PropTemperature
+	PropTrigger
+	PropTriggerDelay
+	PropWhiteBalanceV
+	PropZoom
+	PropFocus
+	PropGuid
+	PropIsoSpeed
+	PropMaxDc1394
+	PropBacklight
+	PropPan
+	PropTilt
+	PropRoll
+	PropIris
+	PropSettings
+	PropBuffersize
 )
 
 // Camera represents camera.
 type Camera struct {
 	opts   Options
-	camera *opencv.Capture
-	frame  *opencv.IplImage
+	camera *gocv.VideoCapture
+	frame  *gocv.Mat
 }
 
 // New returns new Camera for given camera index.
@@ -28,9 +70,12 @@ func New(opts Options) (camera *Camera, err error) {
 	camera = &Camera{}
 	camera.opts = opts
 
-	camera.camera = opencv.NewCameraCapture(opts.Index)
-	if camera.camera == nil {
-		err = fmt.Errorf("camera: can not open camera %d", opts.Index)
+	mat := gocv.NewMat()
+	camera.frame = &mat
+
+	camera.camera, err = gocv.VideoCaptureDevice(opts.Index)
+	if err != nil {
+		err = fmt.Errorf("camera: can not open camera %d: %s", opts.Index, err.Error())
 	}
 
 	camera.SetProperty(PropFrameWidth, opts.Width)
@@ -41,18 +86,22 @@ func New(opts Options) (camera *Camera, err error) {
 
 // Read reads next frame from camera and returns image.
 func (c *Camera) Read() (img image.Image, err error) {
-	if !c.camera.GrabFrame() {
+	ok := c.camera.Read(c.frame)
+	if !ok {
 		err = fmt.Errorf("camera: can not grab frame")
 		return
 	}
 
-	c.frame = c.camera.RetrieveFrame(1)
+	img, e := c.frame.ToImage()
+	if e != nil {
+		err = fmt.Errorf("camera: %v", e)
+		return
+	}
+
 	if c.frame == nil {
 		err = fmt.Errorf("camera: can not retrieve frame")
 		return
 	}
-
-	img = c.frame.ToImage()
 
 	switch c.opts.Rotate {
 	case 90:
@@ -79,12 +128,12 @@ func (c *Camera) Read() (img image.Image, err error) {
 
 // GetProperty returns the specified camera property.
 func (c *Camera) GetProperty(id int) float64 {
-	return c.camera.GetProperty(id)
+	return c.camera.Get(gocv.VideoCaptureProperties(id))
 }
 
 // SetProperty sets a camera property.
 func (c *Camera) SetProperty(id int, value float64) {
-	c.camera.SetProperty(id, value)
+	c.camera.Set(gocv.VideoCaptureProperties(id), value)
 }
 
 // Close closes camera.
@@ -94,8 +143,8 @@ func (c *Camera) Close() (err error) {
 		return
 	}
 
-	c.frame.Release()
-	c.camera.Release()
+	c.frame.Close()
+	err = c.camera.Close()
 	c.camera = nil
 	return
 }

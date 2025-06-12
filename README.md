@@ -21,8 +21,7 @@ You can also use apps like `ffplay` or `vlc`:
 
 ### Build tags
 
-* `cv2` - build with `OpenCV` 2.x ([go-opencv](https://github.com/lazywei/go-opencv))
-* `cv4` - build with `OpenCV` 4.x ([gocv](https://github.com/hybridgroup/gocv))
+* `opencv` - use `OpenCV` to access camera ([gocv](https://github.com/hybridgroup/gocv))
 * `turbo` - build with `libjpeg-turbo` ([libjpeg-turbo](https://www.libjpeg-turbo.org/)) instead of native Go `image/jpeg`
 
 ### Download
