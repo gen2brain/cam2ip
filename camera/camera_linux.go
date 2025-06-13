@@ -13,20 +13,6 @@ import (
 	im "github.com/gen2brain/cam2ip/image"
 )
 
-// Property identifiers.
-const (
-	PropBrightness    = v4l.CtrlBrightness
-	PropContrast      = v4l.CtrlContrast
-	PropSaturation    = v4l.CtrlSaturation
-	PropHue           = v4l.CtrlHue
-	PropGain          = v4l.CtrlGain
-	PropExposure      = v4l.CtrlExposure
-	PropWhiteBalanceU = v4l.CtrlWhiteBalance
-	PropSharpness     = v4l.CtrlSharpness
-	PropWhiteBalanceV = v4l.CtrlDoWhiteBalance
-	PropBacklight     = v4l.CtrlBacklightCompensation
-)
-
 // Camera represents camera.
 type Camera struct {
 	opts   Options
@@ -111,18 +97,6 @@ func (c *Camera) Read() (img image.Image, err error) {
 	}
 
 	return
-}
-
-// GetProperty returns the specified camera property.
-func (c *Camera) GetProperty(id int) float64 {
-	ret, _ := c.camera.GetControl(uint32(id))
-
-	return float64(ret)
-}
-
-// SetProperty sets a camera property.
-func (c *Camera) SetProperty(id int, value float64) {
-	_ = c.camera.SetControl(uint32(id), int32(value))
 }
 
 // Close closes camera.

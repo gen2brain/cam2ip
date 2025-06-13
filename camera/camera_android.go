@@ -285,15 +285,6 @@ func (c *Camera) Read() (img image.Image, err error) {
 	return
 }
 
-// GetProperty returns the specified camera property.
-func (c *Camera) GetProperty(id int) float64 {
-	return 0
-}
-
-// SetProperty sets a camera property.
-func (c *Camera) SetProperty(id int, value float64) {
-}
-
 // Close closes camera.
 func (c *Camera) Close() (err error) {
 	ret := C.closeCamera()
