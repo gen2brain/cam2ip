@@ -6,14 +6,9 @@ package camera
 import (
 	"fmt"
 	"image"
-	"image/color"
-	"image/draw"
-	"time"
 
-	"github.com/anthonynsimon/bild/transform"
 	"github.com/korandiz/v4l"
 	"github.com/korandiz/v4l/fmt/mjpeg"
-	"github.com/pbnjay/pixfont"
 
 	im "github.com/gen2brain/cam2ip/image"
 )
@@ -46,23 +41,27 @@ func New(opts Options) (camera *Camera, err error) {
 	devices := v4l.FindDevices()
 	if len(devices) < opts.Index+1 {
 		err = fmt.Errorf("camera: no camera at index %d", opts.Index)
+
 		return
 	}
 
 	camera.camera, err = v4l.Open(devices[opts.Index].Path)
 	if err != nil {
-		err = fmt.Errorf("camera: %s", err.Error())
+		err = fmt.Errorf("camera: %w", err)
+
 		return
 	}
 
 	if camera.camera == nil {
 		err = fmt.Errorf("camera: can not open camera %d", opts.Index)
+
 		return
 	}
 
 	config, err := camera.camera.GetConfig()
 	if err != nil {
-		err = fmt.Errorf("camera: %s", err.Error())
+		err = fmt.Errorf("camera: %w", err)
+
 		return
 	}
 
@@ -72,13 +71,15 @@ func New(opts Options) (camera *Camera, err error) {
 
 	err = camera.camera.SetConfig(config)
 	if err != nil {
-		err = fmt.Errorf("camera: %s", err.Error())
+		err = fmt.Errorf("camera: %w", err)
+
 		return
 	}
 
 	err = camera.camera.TurnOn()
 	if err != nil {
-		err = fmt.Errorf("camera: %s", err.Error())
+		err = fmt.Errorf("camera: %w", err)
+
 		return
 	}
 
@@ -87,37 +88,26 @@ func New(opts Options) (camera *Camera, err error) {
 
 // Read reads next frame from camera and returns image.
 func (c *Camera) Read() (img image.Image, err error) {
-
 	buffer, err := c.camera.Capture()
 	if err != nil {
-		err = fmt.Errorf("camera: can not grab frame: %s", err.Error())
+		err = fmt.Errorf("camera: can not grab frame: %w", err)
+
 		return
 	}
 
 	img, err = im.NewDecoder(buffer).Decode()
 	if err != nil {
-		err = fmt.Errorf("camera: %s", err.Error())
+		err = fmt.Errorf("camera: %w", err)
+
 		return
 	}
 
-	switch c.opts.Rotate {
-	case 90:
-		img = transform.Rotate(img, 90, &transform.RotationOptions{ResizeBounds: true})
-	case 180:
-		img = transform.Rotate(img, 180, &transform.RotationOptions{ResizeBounds: true})
-	case 270:
-		img = transform.Rotate(img, 270, &transform.RotationOptions{ResizeBounds: true})
+	if c.opts.Rotate != 0 {
+		img = im.Rotate(img, c.opts.Rotate)
 	}
 
 	if c.opts.Timestamp {
-		dimg, ok := img.(draw.Image)
-		if !ok {
-			err = fmt.Errorf("camera: %T is not a drawable image type", img)
-			return
-		}
-
-		pixfont.DrawString(dimg, 10, 10, time.Now().Format("2006-01-02 15:04:05"), color.White)
-		img = dimg
+		img, err = im.Timestamp(img, "")
 	}
 
 	return
@@ -126,6 +116,7 @@ func (c *Camera) Read() (img image.Image, err error) {
 // GetProperty returns the specified camera property.
 func (c *Camera) GetProperty(id int) float64 {
 	ret, _ := c.camera.GetControl(uint32(id))
+
 	return float64(ret)
 }
 
@@ -138,12 +129,13 @@ func (c *Camera) SetProperty(id int, value float64) {
 func (c *Camera) Close() (err error) {
 	if c.camera == nil {
 		err = fmt.Errorf("camera: camera is not opened")
+
 		return
 	}
 
 	c.camera.TurnOff()
-
 	c.camera.Close()
 	c.camera = nil
+
 	return
 }

@@ -7,15 +7,11 @@ import (
 	"bytes"
 	"fmt"
 	"image"
-	"image/color"
-	"image/draw"
 	"runtime"
 	"syscall"
-	"time"
 	"unsafe"
 
-	"github.com/anthonynsimon/bild/transform"
-	"github.com/pbnjay/pixfont"
+	im "github.com/gen2brain/cam2ip/image"
 )
 
 func init() {
@@ -105,7 +101,7 @@ func New(opts Options) (camera *Camera, err error) {
 // Read reads next frame from camera and returns image.
 func (c *Camera) Read() (img image.Image, err error) {
 	ret := sendMessage(c.camera, wmCapGrabFrameNoStop, 0, 0)
-	if bool(int(ret) == 0) {
+	if int(ret) == 0 {
 		err = fmt.Errorf("camera: can not grab frame")
 		return
 	}
@@ -123,7 +119,7 @@ func (c *Camera) Read() (img image.Image, err error) {
 	for y := height - 1; y >= 0; y-- {
 		_, err = r.Read(b)
 		if err != nil {
-			err = fmt.Errorf("camera: can not retrieve frame: %v", err)
+			err = fmt.Errorf("camera: can not retrieve frame: %w", err)
 			return
 		}
 
@@ -139,24 +135,12 @@ func (c *Camera) Read() (img image.Image, err error) {
 
 	img = c.frame
 
-	switch c.opts.Rotate {
-	case 90:
-		img = transform.Rotate(img, 90, &transform.RotationOptions{ResizeBounds: true})
-	case 180:
-		img = transform.Rotate(img, 180, &transform.RotationOptions{ResizeBounds: true})
-	case 270:
-		img = transform.Rotate(img, 270, &transform.RotationOptions{ResizeBounds: true})
+	if c.opts.Rotate != 0 {
+		img = im.Rotate(img, c.opts.Rotate)
 	}
 
 	if c.opts.Timestamp {
-		dimg, ok := img.(draw.Image)
-		if !ok {
-			err = fmt.Errorf("camera: %T is not a drawable image type", img)
-			return
-		}
-
-		pixfont.DrawString(dimg, 10, 10, time.Now().Format("2006-01-02 15:04:05"), color.White)
-		img = dimg
+		img, err = im.Timestamp(img, "")
 	}
 
 	return

@@ -1,6 +1,6 @@
 package camera
 
-// Options.
+// Options .
 type Options struct {
 	Index     int
 	Rotate    int

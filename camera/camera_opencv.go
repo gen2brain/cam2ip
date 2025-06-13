@@ -1,4 +1,4 @@
-//go:build opencv
+//go:build opencv && !android
 
 // Package camera.
 package camera
@@ -6,13 +6,10 @@ package camera
 import (
 	"fmt"
 	"image"
-	"image/color"
-	"image/draw"
-	"time"
 
-	"github.com/anthonynsimon/bild/transform"
-	"github.com/pbnjay/pixfont"
 	"gocv.io/x/gocv"
+
+	im "github.com/gen2brain/cam2ip/image"
 )
 
 // Property identifiers.
@@ -75,7 +72,7 @@ func New(opts Options) (camera *Camera, err error) {
 
 	camera.camera, err = gocv.VideoCaptureDevice(opts.Index)
 	if err != nil {
-		err = fmt.Errorf("camera: can not open camera %d: %s", opts.Index, err.Error())
+		err = fmt.Errorf("camera: can not open camera %d: %w", opts.Index, err)
 	}
 
 	camera.SetProperty(PropFrameWidth, opts.Width)
@@ -92,9 +89,9 @@ func (c *Camera) Read() (img image.Image, err error) {
 		return
 	}
 
-	img, e := c.frame.ToImage()
-	if e != nil {
-		err = fmt.Errorf("camera: %v", e)
+	img, err = c.frame.ToImage()
+	if err != nil {
+		err = fmt.Errorf("camera: %w", err)
 		return
 	}
 
@@ -103,24 +100,12 @@ func (c *Camera) Read() (img image.Image, err error) {
 		return
 	}
 
-	switch c.opts.Rotate {
-	case 90:
-		img = transform.Rotate(img, 90, &transform.RotationOptions{ResizeBounds: true})
-	case 180:
-		img = transform.Rotate(img, 180, &transform.RotationOptions{ResizeBounds: true})
-	case 270:
-		img = transform.Rotate(img, 270, &transform.RotationOptions{ResizeBounds: true})
+	if c.opts.Rotate != 0 {
+		img = im.Rotate(img, c.opts.Rotate)
 	}
 
 	if c.opts.Timestamp {
-		dimg, ok := img.(draw.Image)
-		if !ok {
-			err = fmt.Errorf("camera: %T is not a drawable image type", img)
-			return
-		}
-
-		pixfont.DrawString(dimg, 10, 10, time.Now().Format("2006-01-02 15:04:05"), color.White)
-		img = dimg
+		img, err = im.Timestamp(img, "")
 	}
 
 	return
@@ -140,11 +125,19 @@ func (c *Camera) SetProperty(id int, value float64) {
 func (c *Camera) Close() (err error) {
 	if c.camera == nil {
 		err = fmt.Errorf("camera: camera is not opened")
+
 		return
 	}
 
-	c.frame.Close()
+	err = c.frame.Close()
+	if err != nil {
+		err = fmt.Errorf("camera: %w", err)
+
+		return
+	}
+
 	err = c.camera.Close()
 	c.camera = nil
+
 	return
 }

@@ -32,7 +32,7 @@ ACaptureSessionOutput *captureSessionOutput;
 ACaptureSessionOutputContainer *captureSessionOutputContainer;
 
 void device_on_disconnected(void *context, ACameraDevice *device) {
-    LOGI("camera %s is diconnected.\n", ACameraDevice_getId(device));
+    LOGI("camera %s is disconnected.\n", ACameraDevice_getId(device));
 }
 
 void device_on_error(void *context, ACameraDevice *device, int error) {
@@ -242,6 +242,7 @@ func New(opts Options) (camera *Camera, err error) {
 	ret := C.openCamera(C.int(opts.Index), C.int(opts.Width), C.int(opts.Height))
 	if int(ret) != 0 {
 		err = fmt.Errorf("camera: can not open camera %d: error %d", opts.Index, int(ret))
+
 		return
 	}
 
@@ -253,7 +254,7 @@ func (c *Camera) Read() (img image.Image, err error) {
 	ret := C.captureCamera()
 	if int(ret) != 0 {
 		err = fmt.Errorf("camera: can not grab frame: error %d", int(ret))
-	
+
 		return
 	}
 
