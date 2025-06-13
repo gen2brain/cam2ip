@@ -2,11 +2,11 @@ package camera
 
 import (
 	"fmt"
-	"image/jpeg"
-	"os"
-	"path/filepath"
+	"io"
 	"testing"
 	"time"
+
+	"github.com/gen2brain/cam2ip/image"
 )
 
 func TestCamera(t *testing.T) {
@@ -15,16 +15,14 @@ func TestCamera(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defer camera.Close()
+	defer func(camera *Camera) {
+		err := camera.Close()
+		if err != nil {
+			t.Error(err)
+		}
+	}(camera)
 
-	tmpdir, err := os.MkdirTemp(os.TempDir(), "cam2ip*")
-	if err != nil {
-		t.Error(err)
-	}
-
-	defer os.RemoveAll(tmpdir)
-
-	var i int64
+	var i int
 	var n = 10
 
 	timeout := time.After(time.Duration(n) * time.Second)
@@ -32,7 +30,7 @@ func TestCamera(t *testing.T) {
 	for {
 		select {
 		case <-timeout:
-			//fmt.Printf("Fps: %d\n", i/n)
+			fmt.Printf("FPS: %.2f\n", float64(i)/float64(n))
 			return
 		default:
 			i += 1
@@ -42,17 +40,7 @@ func TestCamera(t *testing.T) {
 				t.Error(err)
 			}
 
-			file, err := os.Create(filepath.Join(tmpdir, fmt.Sprintf("%03d.jpg", i)))
-			if err != nil {
-				t.Error(err)
-			}
-
-			err = jpeg.Encode(file, img, &jpeg.Options{Quality: 75})
-			if err != nil {
-				t.Error(err)
-			}
-
-			err = file.Close()
+			err = image.NewEncoder(io.Discard).Encode(img)
 			if err != nil {
 				t.Error(err)
 			}
