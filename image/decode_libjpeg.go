@@ -1,13 +1,13 @@
-//go:build !turbo
-// +build !turbo
+//go:build libjpeg
 
 // Package image.
 package image
 
 import (
 	"image"
-	"image/jpeg"
 	"io"
+
+	"github.com/pixiv/go-libjpeg/jpeg"
 )
 
 // NewDecoder returns a new Decoder.
@@ -22,5 +22,9 @@ type Decoder struct {
 
 // Decode decodes image from JPEG.
 func (d Decoder) Decode() (image.Image, error) {
-	return jpeg.Decode(d.r)
+	return jpeg.Decode(d.r, &jpeg.DecoderOptions{
+		DCTMethod:              jpeg.DCTFloat,
+		DisableFancyUpsampling: true,
+		DisableBlockSmoothing:  true,
+	})
 }

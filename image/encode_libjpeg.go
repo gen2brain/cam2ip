@@ -1,13 +1,13 @@
-//go:build !turbo
-// +build !turbo
+//go:build libjpeg
 
 // Package image.
 package image
 
 import (
 	"image"
-	"image/jpeg"
 	"io"
+
+	"github.com/pixiv/go-libjpeg/jpeg"
 )
 
 // NewEncoder returns a new Encoder.
@@ -22,10 +22,7 @@ type Encoder struct {
 
 // Encode encodes image to JPEG.
 func (e Encoder) Encode(img image.Image) error {
-	err := jpeg.Encode(e.w, img, &jpeg.Options{Quality: 75})
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return jpeg.Encode(e.w, img, &jpeg.EncoderOptions{
+		Quality: 75,
+	})
 }

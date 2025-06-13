@@ -21,32 +21,18 @@ You can also use apps like `ffplay` or `vlc`:
 
 ### Build tags
 
-* `opencv` - use `OpenCV` to access camera ([gocv](https://github.com/hybridgroup/gocv))
-* `turbo` - build with `libjpeg-turbo` ([libjpeg-turbo](https://www.libjpeg-turbo.org/)) instead of native Go `image/jpeg`
+* `opencv` - use `OpenCV` library to access camera ([gocv](https://github.com/hybridgroup/gocv))
+* `libjpeg` - build with `libjpeg` ([go-libjpeg](https://github.com/pixiv/go-libjpeg)) instead of native Go `image/jpeg`
 
 ### Download
 
-Binaries are compiled with static OpenCV/libjpeg-turbo libraries, they should just work:
-
- - [Linux 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-64bit.tar.gz)
- - [Linux 64bit OpenCV](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-64bit-cv2.tar.gz)
- - [macOS 64bit OpenCV](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-darwin-cv2.zip)
- - [RPi 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-RPi.tar.gz)
- - [RPi 32bit OpenCV](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-RPi-cv2.tar.gz)
- - [RPi 32bit Static](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-RPi-nocgo.tar.gz)
- - [RPi3 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-RPi3.tar.gz)
- - [RPi3 32bit OpenCV](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-RPi3-cv2.tar.gz)
- - [Windows 32bit](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-32bit.zip)
- - [Windows 32bit OpenCV](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-32bit-cv2.zip)
- - [Windows 64bit](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-64bit.zip)
- - [Windows 64bit OpenCV](https://github.com/gen2brain/cam2ip/releases/download/1.6/cam2ip-1.6-64bit-cv2.zip)
-
+Download the latest binaries from the [releases](https://github.com/gen2brain/cam2ip/releases).
 
 ### Installation
 
-    go get -v github.com/gen2brain/cam2ip/cmd/cam2ip
+    go install github.com/gen2brain/cam2ip/cmd/cam2ip@latest
 
-This will install app in `$GOPATH/bin/cam2ip`.
+This command will install `cam2ip` in `GOBIN`, you can point `GOBIN` to e.g. `/usr/local/bin` or `~/.local/bin`.
 
 ### Run in Docker container
 

@@ -1,14 +1,12 @@
-//go:build turbo
-// +build turbo
+//go:build !libjpeg
 
 // Package image.
 package image
 
 import (
 	"image"
+	"image/jpeg"
 	"io"
-
-	jpeg "github.com/antonini/golibjpegturbo"
 )
 
 // NewDecoder returns a new Decoder.
