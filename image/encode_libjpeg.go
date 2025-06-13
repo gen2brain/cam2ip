@@ -23,6 +23,9 @@ type Encoder struct {
 // Encode encodes image to JPEG.
 func (e Encoder) Encode(img image.Image) error {
 	return jpeg.Encode(e.w, img, &jpeg.EncoderOptions{
-		Quality: 75,
+		Quality:         75,
+		DCTMethod:       jpeg.DCTIFast,
+		ProgressiveMode: false,
+		OptimizeCoding:  false,
 	})
 }

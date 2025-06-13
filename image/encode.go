@@ -1,4 +1,4 @@
-//go:build !libjpeg
+//go:build !libjpeg && !jpegli
 
 // Package image.
 package image

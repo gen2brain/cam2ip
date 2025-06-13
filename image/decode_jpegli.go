@@ -1,4 +1,4 @@
-//go:build libjpeg
+//go:build jpegli
 
 // Package image.
 package image
@@ -7,7 +7,7 @@ import (
 	"image"
 	"io"
 
-	"github.com/pixiv/go-libjpeg/jpeg"
+	"github.com/gen2brain/jpegli"
 )
 
 // NewDecoder returns a new Decoder.
@@ -22,9 +22,10 @@ type Decoder struct {
 
 // Decode decodes image from JPEG.
 func (d Decoder) Decode() (image.Image, error) {
-	return jpeg.Decode(d.r, &jpeg.DecoderOptions{
-		DCTMethod:              jpeg.DCTIFast,
-		DisableFancyUpsampling: true,
-		DisableBlockSmoothing:  true,
+	return jpegli.DecodeWithOptions(d.r, &jpegli.DecodingOptions{
+		DCTMethod:       jpegli.DCTIFast,
+		FancyUpsampling: false,
+		BlockSmoothing:  false,
+		ArithCode:       true,
 	})
 }

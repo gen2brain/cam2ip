@@ -5,6 +5,8 @@ github.com/anthonynsimon/bild v0.14.0/go.mod h1:hcvEAyBjTW69qkKJTfpcDQ83sSZHxwOu
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c h1:TUjjeJ2rV4KZxH6hIEi/boEQB3v6aKvwdakUJR3AwiE=
 github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c/go.mod h1:VG58IUyxPWojCtGwqwoZ/6LLXwClu1tssqa5ktOxI9o=
+github.com/gen2brain/jpegli v0.3.4 h1:wFoUHIjfPJGGeuW3r9dqy0MTT1TtvJuWf6EqfHPPGFM=
+github.com/gen2brain/jpegli v0.3.4/go.mod h1:tVnF7NPyufTo8noFlW5lurUUwZW8trwBENOItzuk2BM=
 github.com/hybridgroup/mjpeg v0.0.0-20140228234708-4680f319790e/go.mod h1:eagM805MRKrioHYuU7iKLUyFPVKqVV6um5DAvCkUtXs=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
@@ -22,6 +24,8 @@ github.com/spf13/cobra v1.8.0 h1:7aJaZx1B85qltLMc546zn58BxxfZdR/W22ej9CFoEf0=
 github.com/spf13/cobra v1.8.0/go.mod h1:WXLWApfZ71AjXPya3WOlMsY9yMs7YeiHhFVlvLyhcho=
 github.com/spf13/pflag v1.0.5 h1:iy+VFUOCP1a+8yFto/drg2CJ5u0yRoB7fZw3DKv/JXA=
 github.com/spf13/pflag v1.0.5/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=
+github.com/tetratelabs/wazero v1.9.0 h1:IcZ56OuxrtaEz8UYNRHBrUa9bYeX9oVY93KspZZBf/I=
+github.com/tetratelabs/wazero v1.9.0/go.mod h1:TSbcXCfFP0L2FGkRPxHphadXPjo1T6W+CseNNY7EkjM=
 gocv.io/x/gocv v0.35.0 h1:Qaxb5KdVyy8Spl4S4K0SMZ6CVmKtbfoSGQAxRD3FZlw=
 gocv.io/x/gocv v0.35.0/go.mod h1:oc6FvfYqfBp99p+yOEzs9tbYF9gOrAQSeL/dyIPefJU=
 golang.org/x/crypto v0.18.0 h1:PGVlW0xEltQnzFZ55hkuX5+KLyrMYhHld1YHO4AKcdc=
