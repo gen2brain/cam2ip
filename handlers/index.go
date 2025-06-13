@@ -17,10 +17,11 @@ func NewIndex() *Index {
 func (i *Index) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" && r.Method != "HEAD" {
 		http.Error(w, "405 Method Not Allowed", http.StatusMethodNotAllowed)
+
 		return
 	}
 
-	w.Write([]byte(`<html>
+	_, _ = w.Write([]byte(`<html>
                         <head><title>cam2ip</title></head>
                         <body>
                         <h1>cam2ip</h1>

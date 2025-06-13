@@ -29,6 +29,7 @@ func (s *Socket) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	conn, err := websocket.Accept(w, r, nil)
 	if err != nil {
 		log.Printf("socket: accept: %v", err)
+
 		return
 	}
 
@@ -56,8 +57,10 @@ func (s *Socket) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		time.Sleep(time.Duration(s.delay) * time.Millisecond)
+		if s.delay > 0 {
+			time.Sleep(time.Duration(s.delay) * time.Millisecond)
+		}
 	}
 
-	conn.Close(websocket.StatusNormalClosure, "")
+	_ = conn.Close(websocket.StatusNormalClosure, "")
 }

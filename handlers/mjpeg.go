@@ -3,14 +3,13 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/gen2brain/cam2ip/image"
+	"github.com/gen2brain/cam2ip/reader"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
 	"time"
-
-	"github.com/gen2brain/cam2ip/image"
-	"github.com/gen2brain/cam2ip/reader"
 )
 
 // MJPEG handler.
@@ -28,22 +27,23 @@ func NewMJPEG(reader reader.ImageReader, delay int) *MJPEG {
 func (m *MJPEG) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" && r.Method != "HEAD" {
 		http.Error(w, "405 Method Not Allowed", http.StatusMethodNotAllowed)
+
 		return
 	}
 
 	mimeWriter := multipart.NewWriter(w)
-	mimeWriter.SetBoundary("--boundary")
+	_ = mimeWriter.SetBoundary("--boundary")
 
 	w.Header().Add("Connection", "close")
 	w.Header().Add("Cache-Control", "no-store, no-cache")
 	w.Header().Add("Content-Type", fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mimeWriter.Boundary()))
 
-	cn := w.(http.CloseNotifier).CloseNotify()
+	done := r.Context().Done()
 
 loop:
 	for {
 		select {
-		case <-cn:
+		case <-done:
 			break loop
 
 		default:
@@ -68,9 +68,11 @@ loop:
 				continue
 			}
 
-			time.Sleep(time.Duration(m.delay) * time.Millisecond)
+			if m.delay > 0 {
+				time.Sleep(time.Duration(m.delay) * time.Millisecond)
+			}
 		}
 	}
 
-	mimeWriter.Close()
+	_ = mimeWriter.Close()
 }

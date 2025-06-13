@@ -32,12 +32,13 @@ func (h *HTML) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" && r.Method != "HEAD" {
 		msg := fmt.Sprintf("405 Method Not Allowed (%s)", r.Method)
 		http.Error(w, msg, http.StatusMethodNotAllowed)
+
 		return
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write(h.Template)
+	_, _ = w.Write(h.Template)
 }
 
 var html = `<html>

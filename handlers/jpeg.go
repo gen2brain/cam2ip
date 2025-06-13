@@ -22,6 +22,7 @@ func NewJPEG(reader reader.ImageReader) *JPEG {
 func (j *JPEG) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" && r.Method != "HEAD" {
 		http.Error(w, "405 Method Not Allowed", http.StatusMethodNotAllowed)
+
 		return
 	}
 
@@ -32,12 +33,14 @@ func (j *JPEG) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	img, err := j.reader.Read()
 	if err != nil {
 		log.Printf("jpeg: read: %v", err)
+
 		return
 	}
 
 	err = image.NewEncoder(w).Encode(img)
 	if err != nil {
 		log.Printf("jpeg: encode: %v", err)
+
 		return
 	}
 }
