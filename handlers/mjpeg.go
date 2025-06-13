@@ -13,13 +13,14 @@ import (
 
 // MJPEG handler.
 type MJPEG struct {
-	reader ImageReader
-	delay  int
+	reader  ImageReader
+	delay   int
+	quality int
 }
 
 // NewMJPEG returns new MJPEG handler.
-func NewMJPEG(reader ImageReader, delay int) *MJPEG {
-	return &MJPEG{reader, delay}
+func NewMJPEG(reader ImageReader, delay, quality int) *MJPEG {
+	return &MJPEG{reader, delay, quality}
 }
 
 // ServeHTTP handles requests on incoming connections.
@@ -61,7 +62,7 @@ loop:
 				continue
 			}
 
-			err = image.NewEncoder(partWriter).Encode(img)
+			err = image.NewEncoder(partWriter, m.quality).Encode(img)
 			if err != nil {
 				log.Printf("mjpeg: encode: %v", err)
 				continue

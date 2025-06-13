@@ -12,11 +12,11 @@ type HTML struct {
 }
 
 // NewHTML returns new HTML handler.
-func NewHTML(width, height float64, nogl bool) *HTML {
+func NewHTML(width, height float64, noWebGL bool) *HTML {
 	h := &HTML{}
 
 	tpl := htmlWebGL
-	if nogl {
+	if noWebGL {
 		tpl = html
 	}
 	tpl = strings.Replace(tpl, "{WIDTH}", fmt.Sprintf("%.0f", width), -1)

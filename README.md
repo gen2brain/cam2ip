@@ -51,12 +51,18 @@ Usage: cam2ip [<flags>]
     	Frame width [CAM2IP_WIDTH] (default "640")
   --height
     	Frame height [CAM2IP_HEIGHT] (default "480")
+  --quality
+    	Image quality [CAM2IP_QUALITY] (default "75")
   --rotate
     	Rotate image, valid values are 90, 180, 270 [CAM2IP_ROTATE] (default "0")
+  --flip
+    	Flip image, valid values are horizontal and vertical [CAM2IP_FLIP] (default "")
   --no-webgl
-    	Disable WebGL drawing of images (html handler) [CAM2IP_NO_WEBGL] (default "false")
+    	Disable WebGL drawing of image (html handler) [CAM2IP_NO_WEBGL] (default "false")
   --timestamp
-    	Draws timestamp on images [CAM2IP_TIMESTAMP] (default "false")
+    	Draws timestamp on image [CAM2IP_TIMESTAMP] (default "false")
+  --time-format
+    	Time format [CAM2IP_TIME_FORMAT] (default "2006-01-02 15:04:05")
   --bind-addr
     	Bind address [CAM2IP_BIND_ADDR] (default ":56000")
   --htpasswd-file

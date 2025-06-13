@@ -69,6 +69,10 @@ func (c *Camera) Read() (img image.Image, err error) {
 		img = im.Rotate(img, c.opts.Rotate)
 	}
 
+	if c.opts.Flip != "" {
+		img = im.Flip(img, c.opts.Flip)
+	}
+
 	if c.opts.Timestamp {
 		img, err = im.Timestamp(img, "")
 	}

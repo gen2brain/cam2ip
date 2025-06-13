@@ -21,17 +21,21 @@ func main() {
 
 	flag.IntVar(&srv.Index, "index", 0, "Camera index [CAM2IP_INDEX]")
 	flag.IntVar(&srv.Delay, "delay", 10, "Delay between frames, in milliseconds [CAM2IP_DELAY]")
-	flag.Float64Var(&srv.FrameWidth, "width", 640, "Frame width [CAM2IP_WIDTH]")
-	flag.Float64Var(&srv.FrameHeight, "height", 480, "Frame height [CAM2IP_HEIGHT]")
+	flag.Float64Var(&srv.Width, "width", 640, "Frame width [CAM2IP_WIDTH]")
+	flag.Float64Var(&srv.Height, "height", 480, "Frame height [CAM2IP_HEIGHT]")
+	flag.IntVar(&srv.Quality, "quality", 75, "Image quality [CAM2IP_QUALITY]")
 	flag.IntVar(&srv.Rotate, "rotate", 0, "Rotate image, valid values are 90, 180, 270 [CAM2IP_ROTATE]")
-	flag.BoolVar(&srv.NoWebGL, "no-webgl", false, "Disable WebGL drawing of images (html handler) [CAM2IP_NO_WEBGL]")
-	flag.BoolVar(&srv.Timestamp, "timestamp", false, "Draws timestamp on images [CAM2IP_TIMESTAMP]")
+	flag.StringVar(&srv.Flip, "flip", "", "Flip image, valid values are horizontal and vertical [CAM2IP_FLIP]")
+	flag.BoolVar(&srv.NoWebGL, "no-webgl", false, "Disable WebGL drawing of image (html handler) [CAM2IP_NO_WEBGL]")
+	flag.BoolVar(&srv.Timestamp, "timestamp", false, "Draws timestamp on image [CAM2IP_TIMESTAMP]")
+	flag.StringVar(&srv.TimeFormat, "time-format", "2006-01-02 15:04:05", "Time format [CAM2IP_TIME_FORMAT]")
 	flag.StringVar(&srv.Bind, "bind-addr", ":56000", "Bind address [CAM2IP_BIND_ADDR]")
 	flag.StringVar(&srv.Htpasswd, "htpasswd-file", "", "Path to htpasswd file, if empty auth is disabled [CAM2IP_HTPASSWD_FILE]")
 
 	flag.Usage = func() {
 		stderr("Usage: %s [<flags>]\n", name)
-		order := []string{"index", "delay", "width", "height", "rotate", "no-webgl", "timestamp", "bind-addr", "htpasswd-file"}
+		order := []string{"index", "delay", "width", "height", "quality", "rotate", "flip", "no-webgl",
+			"timestamp", "time-format", "bind-addr", "htpasswd-file"}
 
 		for _, name := range order {
 			f := flag.Lookup(name)
@@ -55,11 +59,13 @@ func main() {
 	}
 
 	cam, err := camera.New(camera.Options{
-		Index:     srv.Index,
-		Rotate:    srv.Rotate,
-		Width:     srv.FrameWidth,
-		Height:    srv.FrameHeight,
-		Timestamp: srv.Timestamp,
+		Index:      srv.Index,
+		Rotate:     srv.Rotate,
+		Flip:       srv.Flip,
+		Width:      srv.Width,
+		Height:     srv.Height,
+		Timestamp:  srv.Timestamp,
+		TimeFormat: srv.TimeFormat,
 	})
 	if err != nil {
 		stderr("%s\n", err.Error())

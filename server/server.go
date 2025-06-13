@@ -16,19 +16,23 @@ type Server struct {
 	Name    string
 	Version string
 
-	Bind     string
-	Htpasswd string
-
 	Index int
 	Delay int
 
-	FrameWidth  float64
-	FrameHeight float64
+	Width  float64
+	Height float64
 
-	Rotate int
+	Quality int
+	Rotate  int
+	Flip    string
 
-	NoWebGL   bool
-	Timestamp bool
+	NoWebGL bool
+
+	Timestamp  bool
+	TimeFormat string
+
+	Bind     string
+	Htpasswd string
 
 	Reader handlers.ImageReader
 }
@@ -48,10 +52,10 @@ func (s *Server) ListenAndServe() error {
 		basic = auth.NewBasicAuthenticator(realm, auth.HtpasswdFileProvider(s.Htpasswd))
 	}
 
-	http.Handle("/html", newAuthHandler(handlers.NewHTML(s.FrameWidth, s.FrameHeight, s.NoWebGL), basic))
-	http.Handle("/jpeg", newAuthHandler(handlers.NewJPEG(s.Reader), basic))
-	http.Handle("/mjpeg", newAuthHandler(handlers.NewMJPEG(s.Reader, s.Delay), basic))
-	http.Handle("/socket", newAuthHandler(handlers.NewSocket(s.Reader, s.Delay), basic))
+	http.Handle("/html", newAuthHandler(handlers.NewHTML(s.Width, s.Height, s.NoWebGL), basic))
+	http.Handle("/jpeg", newAuthHandler(handlers.NewJPEG(s.Reader, s.Quality), basic))
+	http.Handle("/mjpeg", newAuthHandler(handlers.NewMJPEG(s.Reader, s.Delay, s.Quality), basic))
+	http.Handle("/socket", newAuthHandler(handlers.NewSocket(s.Reader, s.Delay, s.Quality), basic))
 
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

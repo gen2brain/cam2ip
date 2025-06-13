@@ -11,19 +11,20 @@ import (
 )
 
 // NewEncoder returns a new Encoder.
-func NewEncoder(w io.Writer) *Encoder {
-	return &Encoder{w}
+func NewEncoder(w io.Writer, quality int) *Encoder {
+	return &Encoder{w, quality}
 }
 
 // Encoder struct.
 type Encoder struct {
-	w io.Writer
+	w       io.Writer
+	quality int
 }
 
 // Encode encodes image to JPEG.
 func (e Encoder) Encode(img image.Image) error {
 	return jpeg.Encode(e.w, img, &jpeg.EncoderOptions{
-		Quality:         75,
+		Quality:         e.quality,
 		DCTMethod:       jpeg.DCTIFast,
 		ProgressiveMode: false,
 		OptimizeCoding:  false,

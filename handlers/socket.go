@@ -14,13 +14,14 @@ import (
 
 // Socket handler.
 type Socket struct {
-	reader ImageReader
-	delay  int
+	reader  ImageReader
+	delay   int
+	quality int
 }
 
 // NewSocket returns new socket handler.
-func NewSocket(reader ImageReader, delay int) *Socket {
-	return &Socket{reader, delay}
+func NewSocket(reader ImageReader, delay, quality int) *Socket {
+	return &Socket{reader, delay, quality}
 }
 
 // ServeHTTP handles requests on incoming connections.
@@ -43,7 +44,7 @@ func (s *Socket) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		w := new(bytes.Buffer)
 
-		err = image.NewEncoder(w).Encode(img)
+		err = image.NewEncoder(w, s.quality).Encode(img)
 		if err != nil {
 			log.Printf("socket: encode: %v", err)
 			continue

@@ -24,11 +24,18 @@ func Rotate(img image.Image, angle int) image.Image {
 	return img
 }
 
-func Timestamp(img image.Image, format string) (image.Image, error) {
-	if format == "" {
-		format = "2006-01-02 15:04:05"
+func Flip(img image.Image, dir string) image.Image {
+	switch dir {
+	case "horizontal":
+		img = transform.FlipH(img)
+	case "vertical":
+		img = transform.FlipV(img)
 	}
 
+	return img
+}
+
+func Timestamp(img image.Image, format string) (image.Image, error) {
 	dimg, ok := img.(draw.Image)
 	if !ok {
 		return img, fmt.Errorf("camera: %T is not a drawable image type", img)

@@ -34,11 +34,6 @@ func New(opts Options) (camera *Camera, err error) {
 	camera.opts = opts
 	camera.className = "capWindowClass"
 
-	camera.instance, err = getModuleHandle()
-	if err != nil {
-		return
-	}
-
 	camera.frame = image.NewRGBA(image.Rect(0, 0, int(camera.opts.Width), int(camera.opts.Height)))
 
 	go func(c *Camera) {
@@ -56,12 +51,18 @@ func New(opts Options) (camera *Camera, err error) {
 			return 0
 		}
 
+		c.instance, err = getModuleHandle()
+		if err != nil {
+			return
+		}
+
 		err = registerClass(c.className, c.instance, fn)
 		if err != nil {
 			return
 		}
 
-		hwnd, err := createWindow(0, c.className, "", wsOverlappedWindow, cwUseDefault, cwUseDefault, int64(c.opts.Width)+100, int64(c.opts.Height)+100, 0, 0, c.instance)
+		hwnd, err := createWindow(0, c.className, "", wsOverlappedWindow, cwUseDefault, cwUseDefault,
+			int64(c.opts.Width)+100, int64(c.opts.Height)+100, 0, 0, c.instance)
 		if err != nil {
 			return
 		}
@@ -92,7 +93,18 @@ func New(opts Options) (camera *Camera, err error) {
 
 		sendMessage(c.camera, wmCapSetCallbackFrame, 0, syscall.NewCallback(c.callback))
 
-		messageLoop(c.camera)
+		for {
+			var msg msgW
+			ok, _ := getMessage(&msg, hwnd, 0, 0)
+			if ok {
+				//translateMessage(&msg)
+				dispatchMessage(&msg)
+			} else {
+				break
+			}
+		}
+
+		return
 	}(camera)
 
 	return
@@ -139,20 +151,14 @@ func (c *Camera) Read() (img image.Image, err error) {
 		img = im.Rotate(img, c.opts.Rotate)
 	}
 
-	if c.opts.Timestamp {
-		img, err = im.Timestamp(img, "")
+	if c.opts.Flip != "" {
+		img = im.Flip(img, c.opts.Flip)
 	}
 
-	return
-}
+	if c.opts.Timestamp {
+		img, err = im.Timestamp(img, c.opts.TimeFormat)
+	}
 
-// GetProperty returns the specified camera property.
-func (c *Camera) GetProperty(id int) float64 {
-	return 0
-}
-
-// SetProperty sets a camera property.
-func (c *Camera) SetProperty(id int, value float64) {
 	return
 }
 
@@ -321,8 +327,9 @@ func destroyWindow(hwnd syscall.Handle) error {
 
 // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-defwindowprocw
 func defWindowProc(hwnd syscall.Handle, msg uint32, wparam, lparam uintptr) uintptr {
-	ret, _, _ := defWindowProcW.Call(uintptr(hwnd), uintptr(msg), uintptr(wparam), uintptr(lparam))
-	return uintptr(ret)
+	ret, _, _ := defWindowProcW.Call(uintptr(hwnd), uintptr(msg), wparam, lparam)
+
+	return ret
 }
 
 // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-dispatchmessagew
@@ -348,6 +355,7 @@ func getMessage(msg *msgW, hwnd syscall.Handle, msgFilterMin, msgFilterMax uint3
 // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-sendmessage
 func sendMessage(hwnd syscall.Handle, msg uint32, wparam, lparam uintptr) uintptr {
 	ret, _, _ := sendMessageW.Call(uintptr(hwnd), uintptr(msg), wparam, lparam, 0, 0)
+
 	return ret
 }
 
@@ -375,6 +383,7 @@ func registerClass(className string, instance syscall.Handle, fn interface{}) er
 // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-unregisterclassw
 func unregisterClass(className string, instance syscall.Handle) bool {
 	ret, _, _ := unregisterClassW.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(className))), uintptr(instance))
+
 	return ret != 0
 }
 
@@ -387,20 +396,4 @@ func capCreateCaptureWindow(lpszWindowName string, dwStyle, x, y, width, height 
 	}
 
 	return syscall.Handle(ret), nil
-}
-
-// messageLoop function
-func messageLoop(hwnd syscall.Handle) {
-	for {
-		msg := &msgW{}
-		ok, _ := getMessage(msg, 0, 0, 0)
-		if ok {
-			translateMessage(msg)
-			dispatchMessage(msg)
-		} else {
-			break
-		}
-	}
-
-	return
 }
