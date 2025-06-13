@@ -3,6 +3,7 @@ module github.com/gen2brain/cam2ip
 require (
 	github.com/abbot/go-http-auth v0.4.0
 	github.com/anthonynsimon/bild v0.14.0
+	github.com/coder/websocket v1.8.13
 	github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c
 	github.com/gen2brain/jpegli v0.3.4
 	github.com/jamiealquiza/envy v1.1.0
@@ -10,7 +11,6 @@ require (
 	github.com/pbnjay/pixfont v0.0.0-20200714042608-33b744692567
 	github.com/pixiv/go-libjpeg v0.0.0-20190822045933-3da21a74767d
 	gocv.io/x/gocv v0.35.0
-	nhooyr.io/websocket v1.8.10
 )
 
 require (

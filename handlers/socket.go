@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"nhooyr.io/websocket"
+	"github.com/coder/websocket"
 
 	"github.com/gen2brain/cam2ip/image"
 	"github.com/gen2brain/cam2ip/reader"
