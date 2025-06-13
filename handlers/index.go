@@ -1,3 +1,4 @@
+// Package handlers provides HTTP handlers for the cam2ip application.
 package handlers
 
 import (

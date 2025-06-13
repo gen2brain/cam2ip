@@ -9,7 +9,6 @@ import (
 	"github.com/abbot/go-http-auth"
 
 	"github.com/gen2brain/cam2ip/handlers"
-	"github.com/gen2brain/cam2ip/reader"
 )
 
 // Server struct.
@@ -31,14 +30,13 @@ type Server struct {
 	NoWebGL   bool
 	Timestamp bool
 
-	FileName string
-
-	Reader reader.ImageReader
+	Reader handlers.ImageReader
 }
 
 // NewServer returns new Server.
 func NewServer() *Server {
 	s := &Server{}
+
 	return s
 }
 
@@ -78,6 +76,7 @@ func newAuthHandler(handler http.Handler, authenticator *auth.BasicAuth) http.Ha
 			w.Header().Set("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", authenticator.Realm))
 			if authenticator.CheckAuth(r) == "" {
 				http.Error(w, "401 Unauthorized", http.StatusUnauthorized)
+
 				return
 			}
 		}

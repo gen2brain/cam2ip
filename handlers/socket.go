@@ -10,17 +10,16 @@ import (
 	"github.com/coder/websocket"
 
 	"github.com/gen2brain/cam2ip/image"
-	"github.com/gen2brain/cam2ip/reader"
 )
 
 // Socket handler.
 type Socket struct {
-	reader reader.ImageReader
+	reader ImageReader
 	delay  int
 }
 
 // NewSocket returns new socket handler.
-func NewSocket(reader reader.ImageReader, delay int) *Socket {
+func NewSocket(reader ImageReader, delay int) *Socket {
 	return &Socket{reader, delay}
 }
 

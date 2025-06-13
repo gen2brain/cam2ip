@@ -5,16 +5,15 @@ import (
 	"net/http"
 
 	"github.com/gen2brain/cam2ip/image"
-	"github.com/gen2brain/cam2ip/reader"
 )
 
 // JPEG handler.
 type JPEG struct {
-	reader reader.ImageReader
+	reader ImageReader
 }
 
 // NewJPEG returns new JPEG handler.
-func NewJPEG(reader reader.ImageReader) *JPEG {
+func NewJPEG(reader ImageReader) *JPEG {
 	return &JPEG{reader}
 }
 

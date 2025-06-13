@@ -1,4 +1,3 @@
-// Package handlers.
 package handlers
 
 import (

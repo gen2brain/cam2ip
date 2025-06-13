@@ -1,5 +1,4 @@
-// Package reader.
-package reader
+package handlers
 
 import (
 	"image"

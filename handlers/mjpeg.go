@@ -1,25 +1,24 @@
-// Package handlers.
 package handlers
 
 import (
 	"fmt"
-	"github.com/gen2brain/cam2ip/image"
-	"github.com/gen2brain/cam2ip/reader"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
 	"time"
+
+	"github.com/gen2brain/cam2ip/image"
 )
 
 // MJPEG handler.
 type MJPEG struct {
-	reader reader.ImageReader
+	reader ImageReader
 	delay  int
 }
 
 // NewMJPEG returns new MJPEG handler.
-func NewMJPEG(reader reader.ImageReader, delay int) *MJPEG {
+func NewMJPEG(reader ImageReader, delay int) *MJPEG {
 	return &MJPEG{reader, delay}
 }
 
