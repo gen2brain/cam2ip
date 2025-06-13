@@ -2,8 +2,6 @@ github.com/abbot/go-http-auth v0.4.0 h1:QjmvZ5gSC7jm3Zg54DqWE/T5m1t2AfDu6QlXJT0E
 github.com/abbot/go-http-auth v0.4.0/go.mod h1:Cz6ARTIzApMJDzh5bRMSUou6UMSp0IEXg9km/ci7TJM=
 github.com/anthonynsimon/bild v0.14.0 h1:IFRkmKdNdqmexXHfEU7rPlAmdUZ8BDZEGtGHDnGWync=
 github.com/anthonynsimon/bild v0.14.0/go.mod h1:hcvEAyBjTW69qkKJTfpcDQ83sSZHxwOunsseDfeQhUs=
-github.com/antonini/golibjpegturbo v0.0.0-20141208033414-c03a2fa1e89a h1:+Q4qlzO9KeavJSvWgRKckT3ViTSQ8rR6GroSiXPRXhs=
-github.com/antonini/golibjpegturbo v0.0.0-20141208033414-c03a2fa1e89a/go.mod h1:UOX4aiVZ5WVUBY3D/31H4m6Z8UHgBj5Qr/oldRBBUMY=
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c h1:TUjjeJ2rV4KZxH6hIEi/boEQB3v6aKvwdakUJR3AwiE=
 github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c/go.mod h1:VG58IUyxPWojCtGwqwoZ/6LLXwClu1tssqa5ktOxI9o=
@@ -17,6 +15,8 @@ github.com/korandiz/v4l v1.1.0/go.mod h1:pftxPG7hkuUgepioAY6PAE81mShaVjzd95X/WF4
 github.com/pascaldekloe/goe v0.1.0/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
 github.com/pbnjay/pixfont v0.0.0-20200714042608-33b744692567 h1:pKjmNHL7BCXhgsnSlN6Ov3WAN2jbJMCx6IvrMN9GNfc=
 github.com/pbnjay/pixfont v0.0.0-20200714042608-33b744692567/go.mod h1:ytYavTmrpWG4s7UOfDhP6m4ASL5XA66nrOcUn1e2M78=
+github.com/pixiv/go-libjpeg v0.0.0-20190822045933-3da21a74767d h1:ls+7AYarUlUSetfnN/DKVNcK6W8mQWc6VblmOm4XwX0=
+github.com/pixiv/go-libjpeg v0.0.0-20190822045933-3da21a74767d/go.mod h1:DO7ixpslN6XfbWzeNH9vkS5CF2FQUX81B85rYe9zDxU=
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/spf13/cobra v1.8.0 h1:7aJaZx1B85qltLMc546zn58BxxfZdR/W22ej9CFoEf0=
 github.com/spf13/cobra v1.8.0/go.mod h1:WXLWApfZ71AjXPya3WOlMsY9yMs7YeiHhFVlvLyhcho=
