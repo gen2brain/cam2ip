@@ -1,7 +1,6 @@
 package image
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
@@ -35,13 +34,15 @@ func Flip(img image.Image, dir string) image.Image {
 	return img
 }
 
-func Timestamp(img image.Image, format string) (image.Image, error) {
+func Timestamp(img image.Image, format string) image.Image {
 	dimg, ok := img.(draw.Image)
 	if !ok {
-		return img, fmt.Errorf("camera: %T is not a drawable image type", img)
+		b := img.Bounds()
+		dimg = image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
+		draw.Draw(dimg, b, img, b.Min, draw.Src)
 	}
 
 	pixfont.DrawString(dimg, 10, 10, time.Now().Format(format), color.White)
 
-	return dimg, nil
+	return dimg
 }
