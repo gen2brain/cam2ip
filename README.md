@@ -22,8 +22,8 @@ You can also use apps like `ffplay` or `vlc`:
 ### Build tags
 
 * `opencv` - use `OpenCV` library to access camera ([gocv](https://github.com/hybridgroup/gocv))
-* `libjpeg` - build with `libjpeg` ([go-libjpeg](https://github.com/pixiv/go-libjpeg)) instead of native Go `image/jpeg`
-* `jpegli` - build with `jpegli` ([jpegli](https://github.com/gen2brain/jpegli)) instead of native Go `image/jpeg`
+* `libjpeg` - build with `libjpeg` ([go-libjpeg](https://github.com/pixiv/go-libjpeg)) instead of native `image/jpeg`
+* `jpegli` - build with `jpegli` ([jpegli](https://github.com/gen2brain/jpegli)) instead of native `image/jpeg`
 
 ### Download
 
