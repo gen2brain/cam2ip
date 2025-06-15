@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/abbot/go-http-auth"
 
@@ -63,7 +64,10 @@ func (s *Server) ListenAndServe() error {
 
 	http.Handle("/", newAuthHandler(handlers.NewIndex(), basic))
 
-	srv := &http.Server{}
+	srv := &http.Server{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+	}
 
 	listener, err := net.Listen("tcp", s.Bind)
 	if err != nil {

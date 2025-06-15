@@ -33,6 +33,7 @@ func (j *JPEG) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	img, err := j.reader.Read()
 	if err != nil {
 		log.Printf("jpeg: read: %v", err)
+		http.Error(w, "500 Internal Server Error", http.StatusInternalServerError)
 
 		return
 	}
@@ -40,6 +41,7 @@ func (j *JPEG) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err = image.NewEncoder(w, j.quality).Encode(img)
 	if err != nil {
 		log.Printf("jpeg: encode: %v", err)
+		http.Error(w, "500 Internal Server Error", http.StatusInternalServerError)
 
 		return
 	}
