@@ -10,7 +10,7 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 go build -tags jpeg -o cam2ip -ldflags "-s -w" github.com/gen2brain/cam2ip/cmd/cam2ip
+RUN CGO_ENABLED=0 go build -o cam2ip -trimpath -ldflags "-s -w" github.com/gen2brain/cam2ip/cmd/cam2ip
 
 
 FROM scratch
