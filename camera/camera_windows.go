@@ -22,10 +22,12 @@ func init() {
 type Camera struct {
 	opts      Options
 	camera    syscall.Handle
-	frame     *image.RGBA
+	rgba      *image.RGBA
+	ycbcr     *image.YCbCr
 	hdr       *videoHdr
 	instance  syscall.Handle
 	className string
+	format    uint32
 }
 
 // New returns new Camera for given camera index.
@@ -33,8 +35,6 @@ func New(opts Options) (camera *Camera, err error) {
 	camera = &Camera{}
 	camera.opts = opts
 	camera.className = "capWindowClass"
-
-	camera.frame = image.NewRGBA(image.Rect(0, 0, int(camera.opts.Width), int(camera.opts.Height)))
 
 	go func(c *Camera) {
 		fn := func(hwnd syscall.Handle, msg uint32, wparam, lparam uintptr) uintptr {
@@ -45,6 +45,7 @@ func New(opts Options) (camera *Camera, err error) {
 				postQuitMessage(0)
 			default:
 				ret := defWindowProc(hwnd, msg, wparam, lparam)
+
 				return ret
 			}
 
@@ -61,9 +62,11 @@ func New(opts Options) (camera *Camera, err error) {
 			return
 		}
 
-		hwnd, err := createWindow(0, c.className, "", wsOverlappedWindow, cwUseDefault, cwUseDefault,
+		hwnd, e := createWindow(0, c.className, "", wsOverlappedWindow, cwUseDefault, cwUseDefault,
 			int64(c.opts.Width)+100, int64(c.opts.Height)+100, 0, 0, c.instance)
-		if err != nil {
+		if e != nil {
+			err = e
+
 			return
 		}
 
@@ -75,8 +78,12 @@ func New(opts Options) (camera *Camera, err error) {
 		ret := sendMessage(c.camera, wmCapDriverConnect, uintptr(c.opts.Index), 0)
 		if int(ret) == 0 {
 			err = fmt.Errorf("camera: can not open camera %d", c.opts.Index)
+
 			return
 		}
+
+		sendMessage(c.camera, wmCapSetPreview, 0, 0)
+		sendMessage(c.camera, wmCapSetOverlay, 0, 0)
 
 		var bi bitmapInfo
 		size := sendMessage(c.camera, wmCapGetVideoformat, 0, 0)
@@ -87,17 +94,36 @@ func New(opts Options) (camera *Camera, err error) {
 
 		ret = sendMessage(c.camera, wmCapSetVideoformat, size, uintptr(unsafe.Pointer(&bi)))
 		if int(ret) == 0 {
-			err = fmt.Errorf("camera: can not set video format")
+			err = fmt.Errorf("camera: can not set video format: %dx%d, %d", int(c.opts.Width), int(c.opts.Height), c.format)
+
 			return
 		}
 
+		c.format = bi.BmiHeader.BiCompression
 		sendMessage(c.camera, wmCapSetCallbackFrame, 0, syscall.NewCallback(c.callback))
+
+		switch c.format {
+		case 0:
+			if bi.BmiHeader.BiBitCount != 24 {
+				err = fmt.Errorf("camera: unsupported format %d; bitcount: %d", c.format, bi.BmiHeader.BiBitCount)
+
+				return
+			}
+
+			c.rgba = image.NewRGBA(image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height)))
+		case yuy2FourCC, yuyvFourCC:
+			c.ycbcr = image.NewYCbCr(image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height)), image.YCbCrSubsampleRatio422)
+		case mjpgFourCC:
+		default:
+			err = fmt.Errorf("camera: unsupported format %d", c.format)
+
+			return
+		}
 
 		for {
 			var msg msgW
-			ok, _ := getMessage(&msg, hwnd, 0, 0)
+			ok, _ := getMessage(&msg, 0, 0, 0)
 			if ok {
-				//translateMessage(&msg)
 				dispatchMessage(&msg)
 			} else {
 				break
@@ -112,40 +138,44 @@ func New(opts Options) (camera *Camera, err error) {
 
 // Read reads next frame from camera and returns image.
 func (c *Camera) Read() (img image.Image, err error) {
-	ret := sendMessage(c.camera, wmCapGrabFrameNoStop, 0, 0)
+	ret := sendMessage(c.camera, wmCapGrabFrame, 0, 0)
 	if int(ret) == 0 {
 		err = fmt.Errorf("camera: can not grab frame")
+
 		return
 	}
 
-	data := (*[1 << 24]uint8)(unsafe.Pointer(c.hdr.LpData))[0:c.hdr.DwBytesUsed]
-	r := bytes.NewReader(data)
+	data := unsafe.Slice((*byte)(unsafe.Pointer(c.hdr.LpData)), c.hdr.DwBufferLength)
 
-	width := int(c.opts.Width)
-	height := int(c.opts.Height)
+	switch c.format {
+	case 0:
+		e := bmp24ToRgba(data, c.rgba)
+		if e != nil {
+			err = fmt.Errorf("camera: format %d: can not retrieve frame: %w", c.format, e)
 
-	// Taken from https://github.com/hotei/bmp/blob/master/bmpRGBA.go#L12
-	// There are 3 bytes per pixel, and each row is 4-byte aligned.
-	b := make([]byte, (3*width+3)&^3)
-	// BMP images are stored bottom-up rather than top-down.
-	for y := height - 1; y >= 0; y-- {
-		_, err = r.Read(b)
-		if err != nil {
-			err = fmt.Errorf("camera: can not retrieve frame: %w", err)
 			return
 		}
 
-		p := c.frame.Pix[y*c.frame.Stride : y*c.frame.Stride+width*4]
-		for i, j := 0, 0; i < len(p); i, j = i+4, j+3 {
-			// BMP images are stored in BGR order rather than RGB order.
-			p[i+0] = b[j+2]
-			p[i+1] = b[j+1]
-			p[i+2] = b[j+0]
-			p[i+3] = 0xFF
-		}
-	}
+		img = c.rgba
+	case yuy2FourCC, yuyvFourCC:
+		e := yuy2ToYCbCr422(data, c.ycbcr)
+		if e != nil {
+			err = fmt.Errorf("camera: format %d: can not retrieve frame: %w", c.format, e)
 
-	img = c.frame
+			return
+		}
+
+		img = c.ycbcr
+	case mjpgFourCC:
+		i, e := im.NewDecoder(bytes.NewReader(data)).Decode()
+		if e != nil {
+			err = fmt.Errorf("camera: format %d: can not retrieve frame: %w", c.format, e)
+
+			return
+		}
+
+		img = i
+	}
 
 	if c.opts.Rotate != 0 {
 		img = im.Rotate(img, c.opts.Rotate)
@@ -173,7 +203,9 @@ func (c *Camera) Close() (err error) {
 
 // callback function.
 func (c *Camera) callback(hwnd syscall.Handle, hdr *videoHdr) uintptr {
-	c.hdr = hdr
+	if hdr != nil {
+		c.hdr = hdr
+	}
 
 	return 0
 }
@@ -183,16 +215,15 @@ var (
 	kernel32 = syscall.NewLazyDLL("kernel32.dll")
 	avicap32 = syscall.NewLazyDLL("avicap32.dll")
 
-	createWindowExW   = user32.NewProc("CreateWindowExW")
-	destroyWindowW    = user32.NewProc("DestroyWindow")
-	defWindowProcW    = user32.NewProc("DefWindowProcW")
-	dispatchMessageW  = user32.NewProc("DispatchMessageW")
-	translateMessageW = user32.NewProc("TranslateMessage")
-	getMessageW       = user32.NewProc("GetMessageW")
-	sendMessageW      = user32.NewProc("SendMessageW")
-	postQuitMessageW  = user32.NewProc("PostQuitMessage")
-	registerClassExW  = user32.NewProc("RegisterClassExW")
-	unregisterClassW  = user32.NewProc("UnregisterClassW")
+	createWindowExW  = user32.NewProc("CreateWindowExW")
+	destroyWindowW   = user32.NewProc("DestroyWindow")
+	defWindowProcW   = user32.NewProc("DefWindowProcW")
+	dispatchMessageW = user32.NewProc("DispatchMessageW")
+	getMessageW      = user32.NewProc("GetMessageW")
+	sendMessageW     = user32.NewProc("SendMessageW")
+	postQuitMessageW = user32.NewProc("PostQuitMessage")
+	registerClassExW = user32.NewProc("RegisterClassExW")
+	unregisterClassW = user32.NewProc("UnregisterClassW")
 
 	getModuleHandleW        = kernel32.NewProc("GetModuleHandleW")
 	capCreateCaptureWindowW = avicap32.NewProc("capCreateCaptureWindowW")
@@ -209,6 +240,8 @@ const (
 	wmCapDriverDisconnect = wmCapStart + 11
 	wmCapGetVideoformat   = wmCapStart + 44
 	wmCapSetVideoformat   = wmCapStart + 45
+	wmCapSetPreview       = wmCapStart + 50
+	wmCapSetOverlay       = wmCapStart + 51
 	wmCapGrabFrame        = wmCapStart + 60
 	wmCapGrabFrameNoStop  = wmCapStart + 61
 	wmCapStop             = wmCapStart + 68
@@ -335,11 +368,6 @@ func defWindowProc(hwnd syscall.Handle, msg uint32, wparam, lparam uintptr) uint
 // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-dispatchmessagew
 func dispatchMessage(msg *msgW) {
 	dispatchMessageW.Call(uintptr(unsafe.Pointer(msg)))
-}
-
-// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-translatemessage
-func translateMessage(msg *msgW) {
-	translateMessageW.Call(uintptr(unsafe.Pointer(msg)))
 }
 
 // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getmessagew

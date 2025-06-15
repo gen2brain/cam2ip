@@ -10,7 +10,7 @@ import (
 )
 
 func TestCamera(t *testing.T) {
-	camera, err := New(Options{0, 0, 640, 480, false})
+	camera, err := New(Options{0, 0, "", 640, 480, false, ""})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,7 +40,7 @@ func TestCamera(t *testing.T) {
 				t.Error(err)
 			}
 
-			err = image.NewEncoder(io.Discard).Encode(img)
+			err = image.NewEncoder(io.Discard, 75).Encode(img)
 			if err != nil {
 				t.Error(err)
 			}

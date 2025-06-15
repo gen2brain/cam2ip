@@ -74,7 +74,7 @@ func (c *Camera) Read() (img image.Image, err error) {
 	}
 
 	if c.opts.Timestamp {
-		img, err = im.Timestamp(img, "")
+		img, err = im.Timestamp(img, c.opts.TimeFormat)
 	}
 
 	return
