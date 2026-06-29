@@ -29,7 +29,7 @@ func BenchmarkEncode(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		err := image.NewEncoder(io.Discard).Encode(img)
+		err := image.NewEncoder(io.Discard, 75).Encode(img)
 		if err != nil {
 			b.Fatal(err)
 		}
