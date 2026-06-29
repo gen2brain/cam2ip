@@ -53,20 +53,24 @@ func (s *Server) ListenAndServe() error {
 		basic = auth.NewBasicAuthenticator(realm, auth.HtpasswdFileProvider(s.Htpasswd))
 	}
 
-	http.Handle("/html", newAuthHandler(handlers.NewHTML(s.Width, s.Height, s.NoWebGL), basic))
-	http.Handle("/jpeg", newAuthHandler(handlers.NewJPEG(s.Reader, s.Quality), basic))
-	http.Handle("/mjpeg", newAuthHandler(handlers.NewMJPEG(s.Reader, s.Delay, s.Quality), basic))
-	http.Handle("/socket", newAuthHandler(handlers.NewSocket(s.Reader, s.Delay, s.Quality), basic))
+	stream := handlers.NewStream(s.Reader, s.Delay, s.Quality)
 
-	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+
+	mux.Handle("/html", newAuthHandler(handlers.NewHTML(s.Width, s.Height, s.NoWebGL), basic))
+	mux.Handle("/jpeg", newAuthHandler(handlers.NewJPEG(stream), basic))
+	mux.Handle("/mjpeg", newAuthHandler(handlers.NewMJPEG(stream), basic))
+	mux.Handle("/socket", newAuthHandler(handlers.NewSocket(stream), basic))
+
+	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	http.Handle("/", newAuthHandler(handlers.NewIndex(), basic))
+	mux.Handle("/", newAuthHandler(handlers.NewIndex(), basic))
 
 	srv := &http.Server{
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 5 * time.Second,
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 
 	listener, err := net.Listen("tcp", s.Bind)

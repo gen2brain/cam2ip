@@ -6,21 +6,16 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
-	"time"
-
-	"github.com/gen2brain/cam2ip/image"
 )
 
 // MJPEG handler.
 type MJPEG struct {
-	reader  ImageReader
-	delay   int
-	quality int
+	stream *Stream
 }
 
 // NewMJPEG returns new MJPEG handler.
-func NewMJPEG(reader ImageReader, delay, quality int) *MJPEG {
-	return &MJPEG{reader, delay, quality}
+func NewMJPEG(stream *Stream) *MJPEG {
+	return &MJPEG{stream}
 }
 
 // ServeHTTP handles requests on incoming connections.
@@ -38,41 +33,40 @@ func (m *MJPEG) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Cache-Control", "no-store, no-cache")
 	w.Header().Add("Content-Type", fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mimeWriter.Boundary()))
 
+	flusher, _ := w.(http.Flusher)
+
+	ch := m.stream.subscribe()
+	defer m.stream.unsubscribe(ch)
+
 	done := r.Context().Done()
 
-loop:
+	partHeader := make(textproto.MIMEHeader)
+	partHeader.Add("Content-Type", "image/jpeg")
+
 	for {
 		select {
 		case <-done:
-			break loop
+			_ = mimeWriter.Close()
 
-		default:
-			partHeader := make(textproto.MIMEHeader)
-			partHeader.Add("Content-Type", "image/jpeg")
+			return
 
+		case frame := <-ch:
 			partWriter, err := mimeWriter.CreatePart(partHeader)
 			if err != nil {
 				log.Printf("mjpeg: createPart: %v", err)
-				continue
+
+				return
 			}
 
-			img, err := m.reader.Read()
-			if err != nil {
-				log.Printf("mjpeg: read: %v", err)
-				continue
+			if _, err := partWriter.Write(frame); err != nil {
+				log.Printf("mjpeg: write: %v", err)
+
+				return
 			}
 
-			err = image.NewEncoder(partWriter, m.quality).Encode(img)
-			if err != nil {
-				log.Printf("mjpeg: encode: %v", err)
-				continue
-			}
-
-			if m.delay > 0 {
-				time.Sleep(time.Duration(m.delay) * time.Millisecond)
+			if flusher != nil {
+				flusher.Flush()
 			}
 		}
 	}
-
-	_ = mimeWriter.Close()
 }

@@ -1,11 +1,8 @@
 package handlers
 
 import (
-	"bytes"
-	"context"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/coder/websocket"
 
@@ -14,14 +11,12 @@ import (
 
 // Socket handler.
 type Socket struct {
-	reader  ImageReader
-	delay   int
-	quality int
+	stream *Stream
 }
 
 // NewSocket returns new socket handler.
-func NewSocket(reader ImageReader, delay, quality int) *Socket {
-	return &Socket{reader, delay, quality}
+func NewSocket(stream *Stream) *Socket {
+	return &Socket{stream}
 }
 
 // ServeHTTP handles requests on incoming connections.
@@ -32,35 +27,24 @@ func (s *Socket) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+	defer conn.Close(websocket.StatusNormalClosure, "")
 
-	ctx := context.Background()
+	ctx := r.Context()
+
+	ch := s.stream.subscribe()
+	defer s.stream.unsubscribe(ch)
 
 	for {
-		img, err := s.reader.Read()
-		if err != nil {
-			log.Printf("socket: read: %v", err)
-			break
-		}
+		select {
+		case <-ctx.Done():
+			return
 
-		w := new(bytes.Buffer)
+		case frame := <-ch:
+			b64 := image.EncodeToString(frame)
 
-		err = image.NewEncoder(w, s.quality).Encode(img)
-		if err != nil {
-			log.Printf("socket: encode: %v", err)
-			continue
-		}
-
-		b64 := image.EncodeToString(w.Bytes())
-
-		err = conn.Write(ctx, websocket.MessageText, []byte(b64))
-		if err != nil {
-			break
-		}
-
-		if s.delay > 0 {
-			time.Sleep(time.Duration(s.delay) * time.Millisecond)
+			if err := conn.Write(ctx, websocket.MessageText, []byte(b64)); err != nil {
+				return
+			}
 		}
 	}
-
-	_ = conn.Close(websocket.StatusNormalClosure, "")
 }
