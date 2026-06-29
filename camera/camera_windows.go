@@ -14,10 +14,6 @@ import (
 	im "github.com/gen2brain/cam2ip/image"
 )
 
-func init() {
-	runtime.LockOSThread()
-}
-
 // Camera represents camera.
 type Camera struct {
 	opts      Options
@@ -36,104 +32,123 @@ func New(opts Options) (camera *Camera, err error) {
 	camera.opts = opts
 	camera.className = "capWindowClass"
 
-	go func(c *Camera) {
-		fn := func(hwnd syscall.Handle, msg uint32, wparam, lparam uintptr) uintptr {
-			switch msg {
-			case wmClose:
-				_ = destroyWindow(hwnd)
-			case wmDestroy:
-				postQuitMessage(0)
-			default:
-				ret := defWindowProc(hwnd, msg, wparam, lparam)
+	ready := make(chan error, 1)
 
-				return ret
-			}
+	go camera.run(ready)
 
-			return 0
-		}
-
-		c.instance, err = getModuleHandle()
-		if err != nil {
-			return
-		}
-
-		err = registerClass(c.className, c.instance, fn)
-		if err != nil {
-			return
-		}
-
-		hwnd, e := createWindow(0, c.className, "", wsOverlappedWindow, cwUseDefault, cwUseDefault,
-			int64(c.opts.Width)+100, int64(c.opts.Height)+100, 0, 0, c.instance)
-		if e != nil {
-			err = e
-
-			return
-		}
-
-		c.camera, err = capCreateCaptureWindow("", wsChild, 0, 0, int64(c.opts.Width), int64(c.opts.Height), hwnd, 0)
-		if err != nil {
-			return
-		}
-
-		ret := sendMessage(c.camera, wmCapDriverConnect, uintptr(c.opts.Index), 0)
-		if int(ret) == 0 {
-			err = fmt.Errorf("camera: can not open camera %d", c.opts.Index)
-
-			return
-		}
-
-		sendMessage(c.camera, wmCapSetPreview, 0, 0)
-		sendMessage(c.camera, wmCapSetOverlay, 0, 0)
-
-		var bi bitmapInfo
-		size := sendMessage(c.camera, wmCapGetVideoformat, 0, 0)
-		sendMessage(c.camera, wmCapGetVideoformat, size, uintptr(unsafe.Pointer(&bi)))
-
-		bi.BmiHeader.BiWidth = int32(c.opts.Width)
-		bi.BmiHeader.BiHeight = int32(c.opts.Height)
-
-		ret = sendMessage(c.camera, wmCapSetVideoformat, size, uintptr(unsafe.Pointer(&bi)))
-		if int(ret) == 0 {
-			err = fmt.Errorf("camera: can not set video format: %dx%d, %d", int(c.opts.Width), int(c.opts.Height), c.format)
-
-			return
-		}
-
-		c.format = bi.BmiHeader.BiCompression
-		sendMessage(c.camera, wmCapSetCallbackFrame, 0, syscall.NewCallback(c.callback))
-
-		switch c.format {
-		case 0:
-			if bi.BmiHeader.BiBitCount != 24 {
-				err = fmt.Errorf("camera: unsupported format %d; bitcount: %d", c.format, bi.BmiHeader.BiBitCount)
-
-				return
-			}
-
-			c.rgba = image.NewRGBA(image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height)))
-		case yuy2FourCC, yuyvFourCC:
-			c.ycbcr = image.NewYCbCr(image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height)), image.YCbCrSubsampleRatio422)
-		case mjpgFourCC:
-		default:
-			err = fmt.Errorf("camera: unsupported format %d", c.format)
-
-			return
-		}
-
-		for {
-			var msg msgW
-			ok, _ := getMessage(&msg, 0, 0, 0)
-			if ok {
-				dispatchMessage(&msg)
-			} else {
-				break
-			}
-		}
+	if err = <-ready; err != nil {
+		camera = nil
 
 		return
-	}(camera)
+	}
 
 	return
+}
+
+// run sets up the capture window on a locked OS thread, reports the result over
+// ready, then runs the win32 message loop.
+func (c *Camera) run(ready chan<- error) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+
+	fn := func(hwnd syscall.Handle, msg uint32, wparam, lparam uintptr) uintptr {
+		switch msg {
+		case wmClose:
+			_ = destroyWindow(hwnd)
+		case wmDestroy:
+			postQuitMessage(0)
+		default:
+			return defWindowProc(hwnd, msg, wparam, lparam)
+		}
+
+		return 0
+	}
+
+	instance, err := getModuleHandle()
+	if err != nil {
+		ready <- err
+
+		return
+	}
+	c.instance = instance
+
+	if err := registerClass(c.className, c.instance, fn); err != nil {
+		ready <- err
+
+		return
+	}
+
+	hwnd, err := createWindow(0, c.className, "", wsOverlappedWindow, cwUseDefault, cwUseDefault,
+		int64(c.opts.Width)+100, int64(c.opts.Height)+100, 0, 0, c.instance)
+	if err != nil {
+		ready <- err
+
+		return
+	}
+
+	c.camera, err = capCreateCaptureWindow("", wsChild, 0, 0, int64(c.opts.Width), int64(c.opts.Height), hwnd, 0)
+	if err != nil {
+		ready <- err
+
+		return
+	}
+
+	ret := sendMessage(c.camera, wmCapDriverConnect, uintptr(c.opts.Index), 0)
+	if int(ret) == 0 {
+		ready <- fmt.Errorf("camera: can not open camera %d", c.opts.Index)
+
+		return
+	}
+
+	sendMessage(c.camera, wmCapSetPreview, 0, 0)
+	sendMessage(c.camera, wmCapSetOverlay, 0, 0)
+
+	var bi bitmapInfo
+	size := sendMessage(c.camera, wmCapGetVideoformat, 0, 0)
+	sendMessage(c.camera, wmCapGetVideoformat, size, uintptr(unsafe.Pointer(&bi)))
+
+	bi.BmiHeader.BiWidth = int32(c.opts.Width)
+	bi.BmiHeader.BiHeight = int32(c.opts.Height)
+
+	ret = sendMessage(c.camera, wmCapSetVideoformat, size, uintptr(unsafe.Pointer(&bi)))
+	if int(ret) == 0 {
+		ready <- fmt.Errorf("camera: can not set video format: %dx%d", int(c.opts.Width), int(c.opts.Height))
+
+		return
+	}
+
+	c.format = bi.BmiHeader.BiCompression
+	sendMessage(c.camera, wmCapSetCallbackFrame, 0, syscall.NewCallback(c.callback))
+
+	switch c.format {
+	case 0:
+		if bi.BmiHeader.BiBitCount != 24 {
+			ready <- fmt.Errorf("camera: unsupported format %d; bitcount: %d", c.format, bi.BmiHeader.BiBitCount)
+
+			return
+		}
+
+		c.rgba = image.NewRGBA(image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height)))
+	case yuy2FourCC, yuyvFourCC:
+		c.ycbcr = image.NewYCbCr(image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height)), image.YCbCrSubsampleRatio422)
+	case mjpgFourCC:
+	default:
+		ready <- fmt.Errorf("camera: unsupported format %d", c.format)
+
+		return
+	}
+
+	ready <- nil
+
+	for {
+		var msg msgW
+		ok, _ := getMessage(&msg, 0, 0, 0)
+		if !ok {
+			break
+		}
+
+		dispatchMessage(&msg)
+	}
 }
 
 // Read reads next frame from camera and returns image.
