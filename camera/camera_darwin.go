@@ -1,4 +1,4 @@
-//go:build darwin && !opencv
+//go:build darwin
 
 // Package camera.
 package camera

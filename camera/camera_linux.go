@@ -1,4 +1,4 @@
-//go:build !opencv && !android
+//go:build !android
 
 // Package camera.
 package camera
