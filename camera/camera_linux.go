@@ -14,12 +14,23 @@ import (
 	im "github.com/gen2brain/cam2ip/image"
 )
 
+// supportedFormats lists the formats the camera can decode, in order of preference.
+var supportedFormats = []uint32{
+	mjpgFourCC, jpegFourCC,
+	yuyvFourCC, uyvyFourCC, yvyuFourCC, vyuyFourCC,
+	nv12FourCC, yu12FourCC, yv12FourCC,
+	rgb24FourCC, bgr24FourCC,
+	greyFourCC,
+}
+
 // Camera represents camera.
 type Camera struct {
 	opts   Options
 	camera *v4l.Device
 	config v4l.DeviceConfig
 	ycbcr  *image.YCbCr
+	rgba   *image.RGBA
+	gray   *image.Gray
 }
 
 // New returns new Camera for given camera index.
@@ -66,15 +77,13 @@ func New(opts Options) (c *Camera, err error) {
 		return
 	}
 
-	if slices.Contains(formats, mjpgFourCC) {
-		c.config.Format = mjpgFourCC
-	} else if slices.Contains(formats, yuyvFourCC) {
-		c.config.Format = yuyvFourCC
-	} else {
-		err = fmt.Errorf("camera: unsupported format %d", c.config.Format)
+	format, ok := selectFormat(formats)
+	if !ok {
+		err = fmt.Errorf("camera: no supported pixel format")
 
 		return
 	}
+	c.config.Format = format
 
 	c.config.Width = int(opts.Width)
 	c.config.Height = int(opts.Height)
@@ -86,8 +95,17 @@ func New(opts Options) (c *Camera, err error) {
 		return
 	}
 
-	if c.config.Format == yuyvFourCC {
-		c.ycbcr = image.NewYCbCr(image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height)), image.YCbCrSubsampleRatio422)
+	rect := image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height))
+
+	switch c.config.Format {
+	case yuy2FourCC, yuyvFourCC, uyvyFourCC, yvyuFourCC, vyuyFourCC:
+		c.ycbcr = image.NewYCbCr(rect, image.YCbCrSubsampleRatio422)
+	case nv12FourCC, yu12FourCC, yv12FourCC:
+		c.ycbcr = image.NewYCbCr(rect, image.YCbCrSubsampleRatio420)
+	case rgb24FourCC, bgr24FourCC:
+		c.rgba = image.NewRGBA(rect)
+	case greyFourCC:
+		c.gray = image.NewGray(rect)
 	}
 
 	err = c.camera.TurnOn()
@@ -100,6 +118,17 @@ func New(opts Options) (c *Camera, err error) {
 	return
 }
 
+// selectFormat returns the first supported format the device offers.
+func selectFormat(formats []uint32) (uint32, bool) {
+	for _, f := range supportedFormats {
+		if slices.Contains(formats, f) {
+			return f, true
+		}
+	}
+
+	return 0, false
+}
+
 // Read reads next frame from camera and returns image.
 func (c *Camera) Read() (img image.Image, err error) {
 	buffer, err := c.camera.Capture()
@@ -109,8 +138,14 @@ func (c *Camera) Read() (img image.Image, err error) {
 		return
 	}
 
-	switch c.config.Format {
-	case yuy2FourCC, yuyvFourCC:
+	if c.config.Format == mjpgFourCC || c.config.Format == jpegFourCC {
+		img, err = im.NewDecoder(buffer).Decode()
+		if err != nil {
+			err = fmt.Errorf("camera: format %d: can not decode frame: %w", c.config.Format, err)
+
+			return
+		}
+	} else {
 		data, e := io.ReadAll(buffer)
 		if e != nil {
 			err = fmt.Errorf("camera: format %d: can not read buffer: %w", c.config.Format, e)
@@ -118,18 +153,9 @@ func (c *Camera) Read() (img image.Image, err error) {
 			return
 		}
 
-		e = yuy2ToYCbCr422(data, c.ycbcr)
-		if e != nil {
-			err = fmt.Errorf("camera: format %d: can not retrieve frame: %w", c.config.Format, e)
-
-			return
-		}
-
-		img = c.ycbcr
-	case mjpgFourCC:
-		img, err = im.NewDecoder(buffer).Decode()
+		img, err = c.convert(data)
 		if err != nil {
-			err = fmt.Errorf("camera: format %d: can not decode frame: %w", c.config.Format, err)
+			err = fmt.Errorf("camera: format %d: can not retrieve frame: %w", c.config.Format, err)
 
 			return
 		}
@@ -148,6 +174,34 @@ func (c *Camera) Read() (img image.Image, err error) {
 	}
 
 	return
+}
+
+// convert converts a raw frame in the negotiated format to an image.
+func (c *Camera) convert(data []byte) (image.Image, error) {
+	switch c.config.Format {
+	case yuy2FourCC, yuyvFourCC:
+		return c.ycbcr, packedYUV422ToYCbCr(data, c.ycbcr, 0, 2, 1, 3)
+	case uyvyFourCC:
+		return c.ycbcr, packedYUV422ToYCbCr(data, c.ycbcr, 1, 3, 0, 2)
+	case yvyuFourCC:
+		return c.ycbcr, packedYUV422ToYCbCr(data, c.ycbcr, 0, 2, 3, 1)
+	case vyuyFourCC:
+		return c.ycbcr, packedYUV422ToYCbCr(data, c.ycbcr, 1, 3, 2, 0)
+	case yu12FourCC:
+		return c.ycbcr, planar420ToYCbCr(data, c.ycbcr, false)
+	case yv12FourCC:
+		return c.ycbcr, planar420ToYCbCr(data, c.ycbcr, true)
+	case nv12FourCC:
+		return c.ycbcr, nv12ToYCbCr(data, c.ycbcr)
+	case rgb24FourCC:
+		return c.rgba, rgb24ToRgba(data, c.rgba, false)
+	case bgr24FourCC:
+		return c.rgba, rgb24ToRgba(data, c.rgba, true)
+	case greyFourCC:
+		return c.gray, greyToGray(data, c.gray)
+	}
+
+	return nil, fmt.Errorf("unsupported format %d", c.config.Format)
 }
 
 // Close closes camera.
