@@ -58,6 +58,13 @@ func New(opts Options) (c *Camera, err error) {
 		return
 	}
 
+	defer func() {
+		if err != nil {
+			c.camera.Close()
+			c.camera = nil
+		}
+	}()
+
 	configs, e := c.camera.ListConfigs()
 	if e != nil {
 		err = fmt.Errorf("camera: can not list configs: %w", e)
