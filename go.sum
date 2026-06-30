@@ -6,8 +6,6 @@ github.com/coder/websocket v1.8.13 h1:f3QZdXy7uGVz+4uCJy2nTZyM0yTBj8yANEHhqlXZ9F
 github.com/coder/websocket v1.8.13/go.mod h1:LNVeNrXQZfe5qhS9ALED3uA+l5pPqvwXg3CKoDBB2gs=
 github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c h1:TUjjeJ2rV4KZxH6hIEi/boEQB3v6aKvwdakUJR3AwiE=
 github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c/go.mod h1:VG58IUyxPWojCtGwqwoZ/6LLXwClu1tssqa5ktOxI9o=
-github.com/gen2brain/jpegli v0.3.4 h1:wFoUHIjfPJGGeuW3r9dqy0MTT1TtvJuWf6EqfHPPGFM=
-github.com/gen2brain/jpegli v0.3.4/go.mod h1:tVnF7NPyufTo8noFlW5lurUUwZW8trwBENOItzuk2BM=
 github.com/hybridgroup/mjpeg v0.0.0-20140228234708-4680f319790e/go.mod h1:eagM805MRKrioHYuU7iKLUyFPVKqVV6um5DAvCkUtXs=
 github.com/korandiz/v4l v1.1.0 h1:VbzaWlhqNzVPfHEYEM+V8T7184ndiEzljJgDHSHc7pc=
 github.com/korandiz/v4l v1.1.0/go.mod h1:pftxPG7hkuUgepioAY6PAE81mShaVjzd95X/WF4Izus=
@@ -18,8 +16,6 @@ github.com/pixiv/go-libjpeg v0.0.0-20190822045933-3da21a74767d h1:ls+7AYarUlUSet
 github.com/pixiv/go-libjpeg v0.0.0-20190822045933-3da21a74767d/go.mod h1:DO7ixpslN6XfbWzeNH9vkS5CF2FQUX81B85rYe9zDxU=
 github.com/rogpeppe/go-internal v1.12.0 h1:exVL4IDcn6na9z1rAb56Vxr+CgyK3nn3O+epU5NdKM8=
 github.com/rogpeppe/go-internal v1.12.0/go.mod h1:E+RYuTGaKKdloAfM02xzb0FW3Paa99yedzYV+kq4uf4=
-github.com/tetratelabs/wazero v1.9.0 h1:IcZ56OuxrtaEz8UYNRHBrUa9bYeX9oVY93KspZZBf/I=
-github.com/tetratelabs/wazero v1.9.0/go.mod h1:TSbcXCfFP0L2FGkRPxHphadXPjo1T6W+CseNNY7EkjM=
 go.senan.xyz/flagconf v0.1.9 h1:LBDmqiVFgijfqFXDzH97gPn0qDbg1Dq6/vxsxS/TzC4=
 go.senan.xyz/flagconf v0.1.9/go.mod h1:NqOFfSwJvNWXOTUabcRZ8mPK9+sJmhStJhqtEt74wNQ=
 gocv.io/x/gocv v0.35.0 h1:Qaxb5KdVyy8Spl4S4K0SMZ6CVmKtbfoSGQAxRD3FZlw=
