@@ -1,0 +1,122 @@
+version: 2
+
+project_name: cam2ip
+
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - id: linux-amd64
+    binary: "{{ .ProjectName }}"
+    main: ./cmd/cam2ip/
+    env: &env
+      - CGO_ENABLED=0
+    flags: &flags
+      - "-trimpath"
+    ldflags: &ldflags
+      - "-s -w -X main.version={{ .Version }}"
+    goos:
+      - linux
+    goarch:
+      - amd64
+
+  - id: linux-arm64
+    binary: "{{ .ProjectName }}"
+    main: ./cmd/cam2ip/
+    env: *env
+    flags: *flags
+    ldflags: *ldflags
+    goos:
+      - linux
+    goarch:
+      - arm64
+
+  - id: linux-arm
+    binary: "{{ .ProjectName }}"
+    main: ./cmd/cam2ip/
+    env: *env
+    flags: *flags
+    ldflags: *ldflags
+    goos:
+      - linux
+    goarch:
+      - arm
+    goarm:
+      - "6"
+      - "7"
+
+  - id: windows-amd64
+    binary: "{{ .ProjectName }}"
+    main: ./cmd/cam2ip/
+    env: *env
+    flags: *flags
+    ldflags: *ldflags
+    goos:
+      - windows
+    goarch:
+      - amd64
+
+  - id: darwin-amd64
+    binary: "{{ .ProjectName }}"
+    main: ./cmd/cam2ip/
+    env: *env
+    flags: *flags
+    ldflags: *ldflags
+    goos:
+      - darwin
+    goarch:
+      - amd64
+
+  - id: darwin-arm64
+    binary: "{{ .ProjectName }}"
+    main: ./cmd/cam2ip/
+    env: *env
+    flags: *flags
+    ldflags: *ldflags
+    goos:
+      - darwin
+    goarch:
+      - arm64
+
+archives:
+  - id: archive
+    wrap_in_directory: "{{ .ProjectName }}-{{ .Version }}"
+    name_template: >-
+      {{- .ProjectName }}-
+      {{- .Version }}-
+      {{- .Os }}-
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "arm64" }}aarch64
+      {{- else if eq .Arch "arm" }}arm{{ .Arm }}
+      {{- else }}{{ .Arch }}{{ end }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+      - goos: darwin
+        formats: [zip]
+    files:
+      - README.md
+      - COPYING
+      - AUTHORS
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  version_template: "{{ .Tag }}-dev"
+
+changelog:
+  sort: asc
+  use: git
+  filters:
+    include:
+      - '^feat(\(.+\))?!?:'
+      - '^fix(\(.+\))?!?:'
+  groups:
+    - title: Features
+      regexp: '^feat(\(.+\))?!?:'
+      order: 0
+    - title: Bug fixes
+      regexp: '^fix(\(.+\))?!?:'
+      order: 1
