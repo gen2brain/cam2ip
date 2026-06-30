@@ -24,6 +24,7 @@ type Camera struct {
 	instance  syscall.Handle
 	className string
 	format    uint32
+	bpp       int
 }
 
 // New returns new Camera for given camera index.
@@ -120,18 +121,21 @@ func (c *Camera) run(ready chan<- error) {
 	c.format = bi.BmiHeader.BiCompression
 	sendMessage(c.camera, wmCapSetCallbackFrame, 0, syscall.NewCallback(c.callback))
 
-	switch c.format {
-	case 0:
-		if bi.BmiHeader.BiBitCount != 24 {
-			ready <- fmt.Errorf("camera: unsupported format %d; bitcount: %d", c.format, bi.BmiHeader.BiBitCount)
+	rect := image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height))
+
+	switch {
+	case c.format == 0:
+		if bi.BmiHeader.BiBitCount != 24 && bi.BmiHeader.BiBitCount != 32 {
+			ready <- fmt.Errorf("camera: unsupported RGB bitcount %d", bi.BmiHeader.BiBitCount)
 
 			return
 		}
 
-		c.rgba = image.NewRGBA(image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height)))
-	case yuy2FourCC, yuyvFourCC:
-		c.ycbcr = image.NewYCbCr(image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height)), image.YCbCrSubsampleRatio422)
-	case mjpgFourCC:
+		c.bpp = int(bi.BmiHeader.BiBitCount) / 8
+		c.rgba = image.NewRGBA(rect)
+	case is422Format(c.format):
+		c.ycbcr = image.NewYCbCr(rect, image.YCbCrSubsampleRatio422)
+	case c.format == mjpgFourCC:
 	default:
 		ready <- fmt.Errorf("camera: unsupported format %d", c.format)
 
@@ -160,11 +164,17 @@ func (c *Camera) Read() (img image.Image, err error) {
 		return
 	}
 
+	if c.hdr == nil {
+		err = fmt.Errorf("camera: no frame available")
+
+		return
+	}
+
 	data := unsafe.Slice((*byte)(unsafe.Pointer(c.hdr.LpData)), c.hdr.DwBufferLength)
 
-	switch c.format {
-	case 0:
-		e := bmp24ToRgba(data, c.rgba)
+	switch {
+	case c.format == 0:
+		e := bmpToRgba(data, c.rgba, c.bpp)
 		if e != nil {
 			err = fmt.Errorf("camera: format %d: can not retrieve frame: %w", c.format, e)
 
@@ -172,8 +182,10 @@ func (c *Camera) Read() (img image.Image, err error) {
 		}
 
 		img = c.rgba
-	case yuy2FourCC, yuyvFourCC:
-		e := yuy2ToYCbCr422(data, c.ycbcr)
+	case is422Format(c.format):
+		y0, y1, cb, cr, _ := packed422Offsets(c.format)
+
+		e := packedYUV422ToYCbCr(data, c.ycbcr, y0, y1, cb, cr)
 		if e != nil {
 			err = fmt.Errorf("camera: format %d: can not retrieve frame: %w", c.format, e)
 
@@ -181,7 +193,7 @@ func (c *Camera) Read() (img image.Image, err error) {
 		}
 
 		img = c.ycbcr
-	case mjpgFourCC:
+	case c.format == mjpgFourCC:
 		i, e := im.NewDecoder(bytes.NewReader(data)).Decode()
 		if e != nil {
 			err = fmt.Errorf("camera: format %d: can not retrieve frame: %w", c.format, e)

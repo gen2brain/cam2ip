@@ -1,7 +1,6 @@
 package camera
 
 import (
-	"bytes"
 	"fmt"
 	"image"
 )
@@ -37,36 +36,54 @@ func fourcc(b string) uint32 {
 	return uint32(b[0]) | (uint32(b[1]) << 8) | (uint32(b[2]) << 16) | (uint32(b[3]) << 24)
 }
 
-func bmp24ToRgba(data []byte, dst *image.RGBA) error {
-	r := bytes.NewReader(data)
-
+// bmpToRgba converts a packed DIB byte slice to an image.RGBA. Rows are bottom-up,
+// 4-byte aligned and in BGR(X) order; bytesPerPixel is 3 (RGB24) or 4 (RGB32).
+func bmpToRgba(data []byte, dst *image.RGBA, bytesPerPixel int) error {
 	width := dst.Bounds().Dx()
 	height := dst.Bounds().Dy()
 
-	// 3 bytes per pixel, rows 4-byte aligned, stored bottom-up in BGR order.
-	b := make([]byte, (3*width+3)&^3)
+	stride := (bytesPerPixel*width + 3) &^ 3
 
-	for y := height - 1; y >= 0; y-- {
-		_, err := r.Read(b)
-		if err != nil {
-			return err
-		}
+	if len(data) < height*stride {
+		return fmt.Errorf("invalid data length for %d-bit RGB", bytesPerPixel*8)
+	}
 
-		p := dst.Pix[y*dst.Stride : y*dst.Stride+width*4]
-		for i, j := 0, 0; i < len(p); i, j = i+4, j+3 {
-			p[i+0] = b[j+2]
-			p[i+1] = b[j+1]
-			p[i+2] = b[j+0]
-			p[i+3] = 0xFF
+	for y := 0; y < height; y++ {
+		src := data[y*stride:]
+		row := dst.Pix[(height-1-y)*dst.Stride : (height-1-y)*dst.Stride+width*4]
+
+		for i, j := 0, 0; i < len(row); i, j = i+4, j+bytesPerPixel {
+			row[i+0] = src[j+2]
+			row[i+1] = src[j+1]
+			row[i+2] = src[j+0]
+			row[i+3] = 0xFF
 		}
 	}
 
 	return nil
 }
 
-// yuy2ToYCbCr422 converts a YUY2 (YUYV) byte slice to an image.YCbCr with YCbCrSubsampleRatio422 (I422).
-func yuy2ToYCbCr422(data []byte, dst *image.YCbCr) error {
-	return packedYUV422ToYCbCr(data, dst, 0, 2, 1, 3)
+// packed422Offsets returns the macropixel byte offsets for a packed 4:2:2 FourCC.
+func packed422Offsets(format uint32) (y0, y1, cb, cr int, ok bool) {
+	switch format {
+	case yuy2FourCC, yuyvFourCC:
+		return 0, 2, 1, 3, true
+	case uyvyFourCC:
+		return 1, 3, 0, 2, true
+	case yvyuFourCC:
+		return 0, 2, 3, 1, true
+	case vyuyFourCC:
+		return 1, 3, 2, 0, true
+	}
+
+	return 0, 0, 0, 0, false
+}
+
+// is422Format reports whether the FourCC is a packed 4:2:2 format.
+func is422Format(format uint32) bool {
+	_, _, _, _, ok := packed422Offsets(format)
+
+	return ok
 }
 
 // packedYUV422ToYCbCr converts packed 4:2:2 to image.YCbCr; y0, y1, cb, cr are the byte offsets within each macropixel.
