@@ -4,8 +4,8 @@ github.com/coder/websocket v1.8.15 h1:6B2JPeOGlpff2Uz6vOEH1Vzpi0iUz20A+lPVhPHtNU
 github.com/coder/websocket v1.8.15/go.mod h1:NX3SzP+inril6yawo5CQXx8+fk145lPDC6pumgx0mVg=
 github.com/ebitengine/purego v0.10.1 h1:dewVBCBT2GaMu1SrNTYxQhgQBethzfhiwvZiLGP/qyY=
 github.com/ebitengine/purego v0.10.1/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
-github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c h1:TUjjeJ2rV4KZxH6hIEi/boEQB3v6aKvwdakUJR3AwiE=
-github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c/go.mod h1:VG58IUyxPWojCtGwqwoZ/6LLXwClu1tssqa5ktOxI9o=
+github.com/gen2brain/base64 v0.2.0 h1:tIkh2/g6oiDKGfLfsbFEXmSeb5lxyTGbaFV2rQwpcaw=
+github.com/gen2brain/base64 v0.2.0/go.mod h1:tiBvPzg3qFDIggMPy0TEedCJVCeNOhDYeJMErNqvZNk=
 github.com/gen2brain/jpegn v0.4.2 h1:sxy2yolV1eNA02uYtnqBFm4EIC3ETnars98aG7Dc4LM=
 github.com/gen2brain/jpegn v0.4.2/go.mod h1:YvcVOmVPSAsefH6yn9HBW3uY0EHlZwCMoiJXoAWfgL0=
 github.com/korandiz/v4l v1.1.0 h1:VbzaWlhqNzVPfHEYEM+V8T7184ndiEzljJgDHSHc7pc=

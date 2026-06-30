@@ -4,7 +4,7 @@ require (
 	github.com/abbot/go-http-auth v0.4.0
 	github.com/coder/websocket v1.8.15
 	github.com/ebitengine/purego v0.10.1
-	github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c
+	github.com/gen2brain/base64 v0.2.0
 	github.com/gen2brain/jpegn v0.4.2
 	github.com/korandiz/v4l v1.1.0
 	github.com/pbnjay/pixfont v0.0.0-20200714042608-33b744692567
