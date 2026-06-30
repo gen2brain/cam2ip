@@ -12,7 +12,7 @@ import (
 func TestCamera(t *testing.T) {
 	camera, err := New(Options{0, 0, "", 640, 480, false, ""})
 	if err != nil {
-		t.Fatal(err)
+		t.Skipf("no camera available: %v", err)
 	}
 
 	defer func(camera *Camera) {
