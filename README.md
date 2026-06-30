@@ -16,8 +16,9 @@ You can also use apps like `ffplay` or `vlc`:
 
 ### Requirements
 
-* On Linux/RPi native Go [V4L](https://github.com/korandiz/v4l) implementation is used to capture images.
-* On Windows [Video for Windows (VfW)](https://en.wikipedia.org/wiki/Video_for_Windows) framework is used over win32 API.
+* On Linux/RPi native Go [Video4Linux (V4L)](https://en.wikipedia.org/wiki/Video4Linux) implementation is used to capture images.
+* On Windows [Media Foundation](https://en.wikipedia.org/wiki/Media_Foundation) is used (or [Video for Windows](https://en.wikipedia.org/wiki/Video_for_Windows) with the `vfw` build tag).
+* On macOS [AVFoundation](https://en.wikipedia.org/wiki/AVFoundation) is used over [purego](https://github.com/ebitengine/purego), no cgo required.
 
 ### Build tags
 
