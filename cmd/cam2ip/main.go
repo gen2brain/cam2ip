@@ -60,14 +60,16 @@ func main() {
 	flag.BoolVar(&showVersion, "version", false, "Print version and exit")
 
 	flag.Usage = func() {
-		stderr("Usage: %s [<flags>]\n", name)
+		color := useColor(os.Stderr)
+
+		stderr("%s %s [<flags>]\n", colorize(color, colorBold, "Usage:"), name)
 		order := []string{"index", "delay", "width", "height", "quality", "rotate", "flip", "no-webgl",
 			"timestamp", "time-format", "bind-addr", "htpasswd-file", "version"}
 
 		for _, name := range order {
 			f := flag.Lookup(name)
 			if f != nil {
-				stderr("  --%s\n    \t%v (default %q)\n", f.Name, f.Usage, f.DefValue)
+				stderr("  %s\n    \t%v (default %q)\n", colorize(color, colorCyan, "--"+f.Name), f.Usage, f.DefValue)
 			}
 		}
 	}
@@ -119,4 +121,30 @@ func main() {
 
 func stderr(format string, a ...any) {
 	_, _ = fmt.Fprintf(os.Stderr, format, a...)
+}
+
+const (
+	colorBold = "\033[1m"
+	colorCyan = "\033[36m"
+)
+
+func useColor(f *os.File) bool {
+	if _, ok := os.LookupEnv("NO_COLOR"); ok {
+		return false
+	}
+
+	stat, err := f.Stat()
+	if err != nil {
+		return false
+	}
+
+	return stat.Mode()&os.ModeCharDevice != 0
+}
+
+func colorize(on bool, code, s string) string {
+	if !on {
+		return s
+	}
+
+	return code + s + "\033[0m"
 }
