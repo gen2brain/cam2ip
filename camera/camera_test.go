@@ -29,25 +29,28 @@ func TestCamera(t *testing.T) {
 	var i int
 	var n = 10
 
+	start := time.Now()
 	timeout := time.After(time.Duration(n) * time.Second)
 
 	for {
 		select {
 		case <-timeout:
-			fmt.Printf("FPS: %.2f\n", float64(i)/float64(n))
+			fmt.Printf("FPS: %.2f\n", float64(i)/time.Since(start).Seconds())
 			return
 		default:
-			i += 1
-
 			img, err := camera.Read()
 			if err != nil {
 				t.Error(err)
+				continue
 			}
 
 			err = image.NewEncoder(io.Discard, 75).Encode(img)
 			if err != nil {
 				t.Error(err)
+				continue
 			}
+
+			i += 1
 		}
 	}
 }
