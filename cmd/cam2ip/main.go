@@ -10,6 +10,7 @@ import (
 	"go.senan.xyz/flagconf"
 
 	"github.com/gen2brain/cam2ip/camera"
+	"github.com/gen2brain/cam2ip/handlers"
 	"github.com/gen2brain/cam2ip/server"
 )
 
@@ -57,6 +58,7 @@ func main() {
 	flag.StringVar(&srv.TimeFormat, "time-format", "2006-01-02 15:04:05", "Time format [CAM2IP_TIME_FORMAT]")
 	flag.StringVar(&srv.Bind, "bind-addr", ":56000", "Bind address [CAM2IP_BIND_ADDR]")
 	flag.StringVar(&srv.Htpasswd, "htpasswd-file", "", "Path to htpasswd file, if empty auth is disabled [CAM2IP_HTPASSWD_FILE]")
+	flag.BoolVar(&srv.Lazy, "lazy", false, "Open the camera only while clients are connected [CAM2IP_LAZY]")
 
 	var showVersion bool
 	flag.BoolVar(&showVersion, "version", false, "Print version and exit")
@@ -69,7 +71,7 @@ func main() {
 
 		stderr("%s %s [<flags>]\n", colorize(color, colorBold, "Usage:"), name)
 		order := []string{"index", "device", "delay", "width", "height", "quality", "rotate", "flip", "no-webgl",
-			"timestamp", "time-format", "bind-addr", "htpasswd-file", "list-devices", "version"}
+			"timestamp", "time-format", "bind-addr", "htpasswd-file", "lazy", "list-devices", "version"}
 
 		for _, name := range order {
 			f := flag.Lookup(name)
@@ -121,7 +123,7 @@ func main() {
 		}
 	}
 
-	cam, err := camera.New(camera.Options{
+	opts := camera.Options{
 		Index:      srv.Index,
 		Rotate:     srv.Rotate,
 		Flip:       srv.Flip,
@@ -129,26 +131,37 @@ func main() {
 		Height:     srv.Height,
 		Timestamp:  srv.Timestamp,
 		TimeFormat: srv.TimeFormat,
-	})
-	if err != nil {
-		stderr("%s\n", err.Error())
-		os.Exit(1)
 	}
 
-	srv.Reader = cam
-
-	defer srv.Reader.Close()
-
-	info := cam.Info()
-	desc := fmt.Sprintf("%dx%d %s", info.Width, info.Height, info.Format)
-	if dn := deviceName(srv.Index); dn != "" {
-		desc = dn + ", " + desc
+	srv.Open = func() (handlers.ImageReader, error) {
+		return camera.New(opts)
 	}
 
-	stderr("%s %s [%s] listening on %s\n", name, version, desc, srv.Bind)
+	if srv.Lazy {
+		stderr("%s %s [lazy] listening on %s\n", name, version, srv.Bind)
+	} else {
+		cam, err := camera.New(opts)
+		if err != nil {
+			stderr("%s\n", err.Error())
+			os.Exit(1)
+		}
 
-	err = srv.ListenAndServe()
-	if err != nil {
+		defer cam.Close()
+
+		srv.Open = func() (handlers.ImageReader, error) {
+			return cam, nil
+		}
+
+		info := cam.Info()
+		desc := fmt.Sprintf("%dx%d %s", info.Width, info.Height, info.Format)
+		if dn := deviceName(srv.Index); dn != "" {
+			desc = dn + ", " + desc
+		}
+
+		stderr("%s %s [%s] listening on %s\n", name, version, desc, srv.Bind)
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
 		stderr("%s\n", err.Error())
 		os.Exit(1)
 	}

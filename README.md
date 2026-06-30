@@ -65,6 +65,8 @@ Usage: cam2ip [<flags>]
     	Bind address [CAM2IP_BIND_ADDR] (default ":56000")
   --htpasswd-file
     	Path to htpasswd file, if empty auth is disabled [CAM2IP_HTPASSWD_FILE] (default "")
+  --lazy
+    	Open the camera only while clients are connected [CAM2IP_LAZY] (default "false")
   --list-devices
     	List available cameras and exit (default "false")
   --version

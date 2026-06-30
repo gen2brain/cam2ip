@@ -36,7 +36,8 @@ type Server struct {
 	Bind     string
 	Htpasswd string
 
-	Reader handlers.ImageReader
+	Lazy bool
+	Open func() (handlers.ImageReader, error)
 }
 
 // NewServer returns new Server.
@@ -54,7 +55,7 @@ func (s *Server) ListenAndServe() error {
 		basic = auth.NewBasicAuthenticator(realm, auth.HtpasswdFileProvider(s.Htpasswd))
 	}
 
-	stream := handlers.NewStream(s.Reader, s.Delay, s.Quality)
+	stream := handlers.NewStream(s.Open, s.Delay, s.Quality, s.Lazy)
 
 	mux := http.NewServeMux()
 

@@ -13,24 +13,32 @@ const errorBackoff = 100 * time.Millisecond
 
 // Stream captures frames in a single loop and broadcasts the encoded JPEG to all subscribers.
 type Stream struct {
-	reader  ImageReader
+	open    func() (ImageReader, error)
+	lazy    bool
 	delay   int
 	quality int
+
+	reader ImageReader
 
 	mu   sync.Mutex
 	cond *sync.Cond
 	subs map[chan []byte]struct{}
 }
 
-// NewStream returns a new Stream and starts its capture loop.
-func NewStream(reader ImageReader, delay, quality int) *Stream {
+// NewStream returns a new Stream and starts its capture loop. open acquires the camera: once up front, or while clients are connected when lazy.
+func NewStream(open func() (ImageReader, error), delay, quality int, lazy bool) *Stream {
 	s := &Stream{
-		reader:  reader,
+		open:    open,
+		lazy:    lazy,
 		delay:   delay,
 		quality: quality,
 		subs:    make(map[chan []byte]struct{}),
 	}
 	s.cond = sync.NewCond(&s.mu)
+
+	if !lazy {
+		s.reader, _ = open()
+	}
 
 	go s.capture()
 
@@ -42,9 +50,26 @@ func (s *Stream) capture() {
 	for {
 		s.mu.Lock()
 		for len(s.subs) == 0 {
+			if s.lazy && s.reader != nil {
+				s.reader.Close()
+				s.reader = nil
+			}
+
 			s.cond.Wait()
 		}
 		s.mu.Unlock()
+
+		if s.reader == nil {
+			reader, err := s.open()
+			if err != nil {
+				log.Printf("stream: open: %v", err)
+				time.Sleep(errorBackoff)
+
+				continue
+			}
+
+			s.reader = reader
+		}
 
 		img, err := s.reader.Read()
 		if err != nil {
