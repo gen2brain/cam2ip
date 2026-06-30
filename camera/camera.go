@@ -22,6 +22,45 @@ type DeviceInfo struct {
 	Name  string
 }
 
+// Info describes the negotiated capture format.
+type Info struct {
+	Format string
+	Width  int
+	Height int
+}
+
+// fourccName returns a readable name for a V4L/VfW pixel format.
+func fourccName(format uint32) string {
+	switch format {
+	case mjpgFourCC:
+		return "MJPEG"
+	case jpegFourCC:
+		return "JPEG"
+	case yuyvFourCC, yuy2FourCC:
+		return "YUYV"
+	case uyvyFourCC:
+		return "UYVY"
+	case yvyuFourCC:
+		return "YVYU"
+	case vyuyFourCC:
+		return "VYUY"
+	case nv12FourCC:
+		return "NV12"
+	case yu12FourCC:
+		return "YU12"
+	case yv12FourCC:
+		return "YV12"
+	case rgb24FourCC:
+		return "RGB24"
+	case bgr24FourCC:
+		return "BGR24"
+	case greyFourCC:
+		return "GREY"
+	}
+
+	return string([]byte{byte(format), byte(format >> 8), byte(format >> 16), byte(format >> 24)})
+}
+
 var (
 	yuy2FourCC  = fourcc("YUY2")
 	yuyvFourCC  = fourcc("YUYV")

@@ -10,6 +10,10 @@ import (
 )
 
 func TestCamera(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping camera test in short mode")
+	}
+
 	camera, err := New(Options{0, 0, "", 640, 480, false, ""})
 	if err != nil {
 		t.Skipf("no camera available: %v", err)

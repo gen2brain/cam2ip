@@ -25,6 +25,8 @@ type Camera struct {
 	className string
 	format    uint32
 	bpp       int
+	width     int
+	height    int
 }
 
 // New returns new Camera for given camera index.
@@ -144,6 +146,9 @@ func (c *Camera) run(ready chan<- error) {
 	if height < 0 {
 		height = -height
 	}
+
+	c.width = width
+	c.height = height
 
 	rect := image.Rect(0, 0, width, height)
 
@@ -481,6 +486,16 @@ func capCreateCaptureWindow(lpszWindowName string, dwStyle, x, y, width, height 
 	}
 
 	return syscall.Handle(ret), nil
+}
+
+// Info returns the negotiated capture format.
+func (c *Camera) Info() Info {
+	format := fourccName(c.format)
+	if c.format == 0 {
+		format = fmt.Sprintf("RGB%d", c.bpp*8)
+	}
+
+	return Info{Format: format, Width: c.width, Height: c.height}
 }
 
 // Devices returns the available capture devices.

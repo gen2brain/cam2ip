@@ -215,6 +215,11 @@ func (c *Camera) Close() (err error) {
 	return
 }
 
+// Info returns the negotiated capture format.
+func (c *Camera) Info() Info {
+	return Info{Format: fourccName(c.config.Format), Width: c.config.Width, Height: c.config.Height}
+}
+
 // Devices returns the available capture devices.
 func Devices() ([]DeviceInfo, error) {
 	infos := v4l.FindDevices()

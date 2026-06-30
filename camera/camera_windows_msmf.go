@@ -449,6 +449,11 @@ func nv12ToYCbCr420(data []byte, stride, width, height int, dst *image.YCbCr) {
 	}
 }
 
+// Info returns the negotiated capture format.
+func (c *Camera) Info() Info {
+	return Info{Format: "NV12", Width: c.width, Height: c.height}
+}
+
 // Devices returns the available capture devices.
 func Devices() ([]DeviceInfo, error) {
 	runtime.LockOSThread()

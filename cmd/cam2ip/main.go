@@ -139,7 +139,13 @@ func main() {
 
 	defer srv.Reader.Close()
 
-	stderr("%s %s listening on %s\n", name, version, srv.Bind)
+	info := cam.Info()
+	desc := fmt.Sprintf("%dx%d %s", info.Width, info.Height, info.Format)
+	if dn := deviceName(srv.Index); dn != "" {
+		desc = dn + ", " + desc
+	}
+
+	stderr("%s %s [%s] listening on %s\n", name, version, desc, srv.Bind)
 
 	err = srv.ListenAndServe()
 	if err != nil {
@@ -150,6 +156,22 @@ func main() {
 
 func stderr(format string, a ...any) {
 	_, _ = fmt.Fprintf(os.Stderr, format, a...)
+}
+
+// deviceName returns the name of the camera at the given index, or "" if unknown.
+func deviceName(index int) string {
+	devices, err := camera.Devices()
+	if err != nil {
+		return ""
+	}
+
+	for _, d := range devices {
+		if d.Index == index {
+			return d.Name
+		}
+	}
+
+	return ""
 }
 
 // deviceIndex returns the index of the first camera whose name contains the query.
