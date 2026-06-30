@@ -5,6 +5,7 @@ require (
 	github.com/anthonynsimon/bild v0.14.0
 	github.com/coder/websocket v1.8.13
 	github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c
+	github.com/gen2brain/jpegn v0.4.2
 	github.com/korandiz/v4l v1.1.0
 	github.com/pbnjay/pixfont v0.0.0-20200714042608-33b744692567
 	github.com/pixiv/go-libjpeg v0.0.0-20190822045933-3da21a74767d
@@ -18,6 +19,6 @@ require (
 	golang.org/x/sys v0.19.0 // indirect
 )
 
-go 1.23
+go 1.23.0
 
 toolchain go1.24.3

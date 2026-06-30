@@ -6,6 +6,8 @@ github.com/coder/websocket v1.8.13 h1:f3QZdXy7uGVz+4uCJy2nTZyM0yTBj8yANEHhqlXZ9F
 github.com/coder/websocket v1.8.13/go.mod h1:LNVeNrXQZfe5qhS9ALED3uA+l5pPqvwXg3CKoDBB2gs=
 github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c h1:TUjjeJ2rV4KZxH6hIEi/boEQB3v6aKvwdakUJR3AwiE=
 github.com/gen2brain/base64 v0.0.0-20221015184129-317a5c93030c/go.mod h1:VG58IUyxPWojCtGwqwoZ/6LLXwClu1tssqa5ktOxI9o=
+github.com/gen2brain/jpegn v0.4.2 h1:sxy2yolV1eNA02uYtnqBFm4EIC3ETnars98aG7Dc4LM=
+github.com/gen2brain/jpegn v0.4.2/go.mod h1:YvcVOmVPSAsefH6yn9HBW3uY0EHlZwCMoiJXoAWfgL0=
 github.com/hybridgroup/mjpeg v0.0.0-20140228234708-4680f319790e/go.mod h1:eagM805MRKrioHYuU7iKLUyFPVKqVV6um5DAvCkUtXs=
 github.com/korandiz/v4l v1.1.0 h1:VbzaWlhqNzVPfHEYEM+V8T7184ndiEzljJgDHSHc7pc=
 github.com/korandiz/v4l v1.1.0/go.mod h1:pftxPG7hkuUgepioAY6PAE81mShaVjzd95X/WF4Izus=

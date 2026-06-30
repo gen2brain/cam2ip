@@ -1,12 +1,13 @@
-//go:build !libjpeg && !jpegli
+//go:build !libjpeg
 
 // Package image.
 package image
 
 import (
 	"image"
-	"image/jpeg"
 	"io"
+
+	"github.com/gen2brain/jpegn"
 )
 
 // NewDecoder returns a new Decoder.
@@ -21,5 +22,5 @@ type Decoder struct {
 
 // Decode decodes image from JPEG.
 func (d Decoder) Decode() (image.Image, error) {
-	return jpeg.Decode(d.r)
+	return jpegn.Decode(d.r)
 }
