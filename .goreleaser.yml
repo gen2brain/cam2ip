@@ -79,6 +79,19 @@ builds:
     goarch:
       - arm64
 
+  - id: android-arm64
+    binary: "{{ .ProjectName }}"
+    main: ./cmd/cam2ip/
+    env:
+      - CGO_ENABLED=1
+      - CC={{ .Env.ANDROID_NDK_ROOT }}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang
+    flags: *flags
+    ldflags: *ldflags
+    goos:
+      - android
+    goarch:
+      - arm64
+
 archives:
   - id: archive
     wrap_in_directory: "{{ .ProjectName }}-{{ .Version }}"
