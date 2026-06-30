@@ -3,11 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"runtime/debug"
 	"strings"
 
 	"go.senan.xyz/flagconf"
+	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/term"
 
 	"github.com/gen2brain/cam2ip/camera"
 	"github.com/gen2brain/cam2ip/handlers"
@@ -66,12 +69,15 @@ func main() {
 	var listDevices bool
 	flag.BoolVar(&listDevices, "list-devices", false, "List available cameras and exit")
 
+	var addUser string
+	flag.StringVar(&addUser, "add-user", "", "Add a user to the htpasswd file (with --htpasswd-file) and exit")
+
 	flag.Usage = func() {
 		color := useColor(os.Stderr)
 
 		stderr("%s %s [<flags>]\n", colorize(color, colorBold, "Usage:"), name)
 		order := []string{"index", "device", "delay", "width", "height", "quality", "rotate", "flip", "no-webgl",
-			"timestamp", "time-format", "bind-addr", "htpasswd-file", "lazy", "list-devices", "version"}
+			"timestamp", "time-format", "bind-addr", "htpasswd-file", "add-user", "lazy", "list-devices", "version"}
 
 		for _, name := range order {
 			f := flag.Lookup(name)
@@ -100,6 +106,21 @@ func main() {
 			fmt.Printf("%d: %s\n", d.Index, d.Name)
 		}
 
+		os.Exit(0)
+	}
+
+	if addUser != "" {
+		if srv.Htpasswd == "" {
+			stderr("--add-user requires --htpasswd-file\n")
+			os.Exit(1)
+		}
+
+		if err := addHtpasswdUser(srv.Htpasswd, addUser); err != nil {
+			stderr("%s\n", err.Error())
+			os.Exit(1)
+		}
+
+		stderr("added user %q to %s\n", addUser, srv.Htpasswd)
 		os.Exit(0)
 	}
 
@@ -169,6 +190,71 @@ func main() {
 
 func stderr(format string, a ...any) {
 	_, _ = fmt.Fprintf(os.Stderr, format, a...)
+}
+
+// addHtpasswdUser prompts for a password and writes a bcrypt entry for user to the htpasswd file.
+func addHtpasswdUser(path, user string) error {
+	password, err := readPassword()
+	if err != nil {
+		return err
+	}
+
+	hash, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	var lines []string
+	if data, err := os.ReadFile(path); err == nil {
+		for _, line := range strings.Split(string(data), "\n") {
+			if name, _, ok := strings.Cut(line, ":"); line != "" && !(ok && name == user) {
+				lines = append(lines, line)
+			}
+		}
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+
+	lines = append(lines, user+":"+string(hash))
+
+	return os.WriteFile(path, []byte(strings.Join(lines, "\n")+"\n"), 0o600)
+}
+
+// readPassword reads a password from the terminal (without echo) or from stdin when piped.
+func readPassword() ([]byte, error) {
+	fd := int(os.Stdin.Fd())
+	if !term.IsTerminal(fd) {
+		data, err := io.ReadAll(os.Stdin)
+		if err != nil {
+			return nil, err
+		}
+
+		return []byte(strings.TrimRight(string(data), "\r\n")), nil
+	}
+
+	stderr("Password: ")
+	first, err := term.ReadPassword(fd)
+	stderr("\n")
+	if err != nil {
+		return nil, err
+	}
+
+	stderr("Confirm password: ")
+	second, err := term.ReadPassword(fd)
+	stderr("\n")
+	if err != nil {
+		return nil, err
+	}
+
+	if string(first) != string(second) {
+		return nil, fmt.Errorf("passwords do not match")
+	}
+
+	if len(first) == 0 {
+		return nil, fmt.Errorf("empty password")
+	}
+
+	return first, nil
 }
 
 // deviceName returns the name of the camera at the given index, or "" if unknown.
