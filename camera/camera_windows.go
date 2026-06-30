@@ -46,8 +46,7 @@ func New(opts Options) (camera *Camera, err error) {
 	return
 }
 
-// run sets up the capture window on a locked OS thread, reports the result over
-// ready, then runs the win32 message loop.
+// run sets up the capture window on a locked OS thread, reports the result over ready, then pumps messages.
 func (c *Camera) run(ready chan<- error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -108,20 +107,45 @@ func (c *Camera) run(ready chan<- error) {
 	size := sendMessage(c.camera, wmCapGetVideoformat, 0, 0)
 	sendMessage(c.camera, wmCapGetVideoformat, size, uintptr(unsafe.Pointer(&bi)))
 
-	bi.BmiHeader.BiWidth = int32(c.opts.Width)
-	bi.BmiHeader.BiHeight = int32(c.opts.Height)
+	headerSize := uintptr(unsafe.Sizeof(bi.BmiHeader))
 
-	ret = sendMessage(c.camera, wmCapSetVideoformat, size, uintptr(unsafe.Pointer(&bi)))
-	if int(ret) == 0 {
-		ready <- fmt.Errorf("camera: can not set video format: %dx%d", int(c.opts.Width), int(c.opts.Height))
+	// Request an uncompressed format; the WDM mapper converts, and MJPG via grab is unreliable.
+	for _, f := range []struct {
+		compression uint32
+		bitCount    uint16
+	}{
+		{biRGB, 24},
+		{biRGB, 32},
+		{yuy2FourCC, 16},
+	} {
+		stride := ((int(c.opts.Width)*int(f.bitCount) + 31) / 32) * 4
 
-		return
+		bi.BmiHeader.BiSize = uint32(headerSize)
+		bi.BmiHeader.BiPlanes = 1
+		bi.BmiHeader.BiWidth = int32(c.opts.Width)
+		bi.BmiHeader.BiHeight = int32(c.opts.Height)
+		bi.BmiHeader.BiCompression = f.compression
+		bi.BmiHeader.BiBitCount = f.bitCount
+		bi.BmiHeader.BiSizeImage = uint32(stride * int(c.opts.Height))
+
+		if int(sendMessage(c.camera, wmCapSetVideoformat, headerSize, uintptr(unsafe.Pointer(&bi)))) != 0 {
+			break
+		}
 	}
 
+	// Read back the format the driver actually accepted.
+	sendMessage(c.camera, wmCapGetVideoformat, headerSize, uintptr(unsafe.Pointer(&bi)))
 	c.format = bi.BmiHeader.BiCompression
+
 	sendMessage(c.camera, wmCapSetCallbackFrame, 0, syscall.NewCallback(c.callback))
 
-	rect := image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height))
+	width := int(bi.BmiHeader.BiWidth)
+	height := int(bi.BmiHeader.BiHeight)
+	if height < 0 {
+		height = -height
+	}
+
+	rect := image.Rect(0, 0, width, height)
 
 	switch {
 	case c.format == 0:
@@ -222,10 +246,13 @@ func (c *Camera) Read() (img image.Image, err error) {
 // Close closes camera.
 func (c *Camera) Close() (err error) {
 	sendMessage(c.camera, wmCapSetCallbackFrame, 0, 0)
-	unregisterClass(c.className, c.instance)
 	sendMessage(c.camera, wmCapDriverDisconnect, 0, 0)
 
-	return destroyWindow(c.camera)
+	err = destroyWindow(c.camera)
+
+	unregisterClass(c.className, c.instance)
+
+	return err
 }
 
 // callback function.
@@ -278,6 +305,8 @@ const (
 	wsOverlappedWindow = 0x00CF0000
 
 	cwUseDefault = 0x7fffffff
+
+	biRGB = 0
 )
 
 // wndClassExW https://msdn.microsoft.com/en-us/library/windows/desktop/ms633577.aspx
