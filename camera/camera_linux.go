@@ -178,15 +178,11 @@ func (c *Camera) Read() (img image.Image, err error) {
 
 // convert converts a raw frame in the negotiated format to an image.
 func (c *Camera) convert(data []byte) (image.Image, error) {
+	if y0, y1, cb, cr, ok := packed422Offsets(c.config.Format); ok {
+		return c.ycbcr, packedYUV422ToYCbCr(data, c.ycbcr, y0, y1, cb, cr)
+	}
+
 	switch c.config.Format {
-	case yuy2FourCC, yuyvFourCC:
-		return c.ycbcr, packedYUV422ToYCbCr(data, c.ycbcr, 0, 2, 1, 3)
-	case uyvyFourCC:
-		return c.ycbcr, packedYUV422ToYCbCr(data, c.ycbcr, 1, 3, 0, 2)
-	case yvyuFourCC:
-		return c.ycbcr, packedYUV422ToYCbCr(data, c.ycbcr, 0, 2, 3, 1)
-	case vyuyFourCC:
-		return c.ycbcr, packedYUV422ToYCbCr(data, c.ycbcr, 1, 3, 2, 0)
 	case yu12FourCC:
 		return c.ycbcr, planar420ToYCbCr(data, c.ycbcr, false)
 	case yv12FourCC:

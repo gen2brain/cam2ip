@@ -123,17 +123,48 @@ func TestGreyToGray(t *testing.T) {
 	assertBytes(t, "Pix", dst.Pix, []byte{1, 2, 3, 4})
 }
 
-func TestSelectFormat(t *testing.T) {
-	if f, ok := selectFormat([]uint32{yuyvFourCC, mjpgFourCC}); !ok || f != mjpgFourCC {
-		t.Errorf("expected MJPG to win over YUYV, got %d ok=%v", f, ok)
+func TestPacked422Offsets(t *testing.T) {
+	for _, f := range []uint32{yuyvFourCC, yuy2FourCC, uyvyFourCC, yvyuFourCC, vyuyFourCC} {
+		if !is422Format(f) {
+			t.Errorf("format %d should be 4:2:2", f)
+		}
 	}
 
-	if f, ok := selectFormat([]uint32{greyFourCC, yuyvFourCC}); !ok || f != yuyvFourCC {
-		t.Errorf("expected YUYV to win over GREY, got %d ok=%v", f, ok)
+	if is422Format(nv12FourCC) {
+		t.Error("NV12 is not 4:2:2")
 	}
 
-	if _, ok := selectFormat([]uint32{fourcc("XVID")}); ok {
-		t.Error("expected no supported format")
+	if _, _, _, _, ok := packed422Offsets(fourcc("XVID")); ok {
+		t.Error("XVID should have no offsets")
+	}
+}
+
+func TestBmpToRgba(t *testing.T) {
+	// 2x1 image, bottom-up BGR(X) source rows.
+	tests := []struct {
+		name string
+		bpp  int
+		data []byte
+	}{
+		{"RGB24", 3, []byte{30, 20, 10, 60, 50, 40, 0, 0}}, // 6 data + 2 pad to 8-byte row
+		{"RGB32", 4, []byte{30, 20, 10, 0, 60, 50, 40, 0}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dst := image.NewRGBA(image.Rect(0, 0, 2, 1))
+
+			if err := bmpToRgba(tt.data, dst, tt.bpp); err != nil {
+				t.Fatal(err)
+			}
+
+			assertBytes(t, "Pix", dst.Pix, []byte{10, 20, 30, 0xFF, 40, 50, 60, 0xFF})
+		})
+	}
+
+	dst := image.NewRGBA(image.Rect(0, 0, 2, 2))
+	if err := bmpToRgba(make([]byte, 4), dst, 3); err == nil {
+		t.Error("expected error for short data")
 	}
 }
 
