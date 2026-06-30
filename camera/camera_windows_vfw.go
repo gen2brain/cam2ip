@@ -1,4 +1,4 @@
-//go:build !opencv && !msmf
+//go:build windows && vfw && !opencv
 
 // Package camera.
 package camera
