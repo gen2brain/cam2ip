@@ -6,32 +6,63 @@ import (
 	"image/draw"
 	"time"
 
-	"github.com/anthonynsimon/bild/transform"
 	"github.com/pbnjay/pixfont"
 )
 
+// Rotate rotates the image clockwise by 90, 180 or 270 degrees.
 func Rotate(img image.Image, angle int) image.Image {
+	b := img.Bounds()
+	w, h := b.Dx(), b.Dy()
+
+	var dst *image.RGBA
 	switch angle {
-	case 90:
-		img = transform.Rotate(img, 90, &transform.RotationOptions{ResizeBounds: true})
+	case 90, 270:
+		dst = image.NewRGBA(image.Rect(0, 0, h, w))
 	case 180:
-		img = transform.Rotate(img, 180, &transform.RotationOptions{ResizeBounds: true})
-	case 270:
-		img = transform.Rotate(img, 270, &transform.RotationOptions{ResizeBounds: true})
+		dst = image.NewRGBA(image.Rect(0, 0, w, h))
+	default:
+		return img
 	}
 
-	return img
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
+			c := img.At(b.Min.X+x, b.Min.Y+y)
+			switch angle {
+			case 90:
+				dst.Set(h-1-y, x, c)
+			case 180:
+				dst.Set(w-1-x, h-1-y, c)
+			case 270:
+				dst.Set(y, w-1-x, c)
+			}
+		}
+	}
+
+	return dst
 }
 
+// Flip mirrors the image horizontally or vertically.
 func Flip(img image.Image, dir string) image.Image {
-	switch dir {
-	case "horizontal":
-		img = transform.FlipH(img)
-	case "vertical":
-		img = transform.FlipV(img)
+	if dir != "horizontal" && dir != "vertical" {
+		return img
 	}
 
-	return img
+	b := img.Bounds()
+	w, h := b.Dx(), b.Dy()
+	dst := image.NewRGBA(image.Rect(0, 0, w, h))
+
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
+			c := img.At(b.Min.X+x, b.Min.Y+y)
+			if dir == "horizontal" {
+				dst.Set(w-1-x, y, c)
+			} else {
+				dst.Set(x, h-1-y, c)
+			}
+		}
+	}
+
+	return dst
 }
 
 func Timestamp(img image.Image, format string) image.Image {
