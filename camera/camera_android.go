@@ -296,3 +296,8 @@ func (c *Camera) Close() (err error) {
 
 	return
 }
+
+// Devices returns the available capture devices.
+func Devices() ([]DeviceInfo, error) {
+	return nil, fmt.Errorf("camera: device enumeration not implemented on android")
+}

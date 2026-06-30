@@ -214,3 +214,20 @@ func (c *Camera) Close() (err error) {
 
 	return
 }
+
+// Devices returns the available capture devices.
+func Devices() ([]DeviceInfo, error) {
+	infos := v4l.FindDevices()
+	devices := make([]DeviceInfo, 0, len(infos))
+
+	for i, d := range infos {
+		name := d.DeviceName
+		if name == "" {
+			name = d.Path
+		}
+
+		devices = append(devices, DeviceInfo{Index: i, Name: name})
+	}
+
+	return devices, nil
+}

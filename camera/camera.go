@@ -16,6 +16,12 @@ type Options struct {
 	TimeFormat string
 }
 
+// DeviceInfo describes a capture device.
+type DeviceInfo struct {
+	Index int
+	Name  string
+}
+
 var (
 	yuy2FourCC  = fourcc("YUY2")
 	yuyvFourCC  = fourcc("YUYV")

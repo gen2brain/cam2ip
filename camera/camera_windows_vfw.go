@@ -279,8 +279,9 @@ var (
 	registerClassExW = user32.NewProc("RegisterClassExW")
 	unregisterClassW = user32.NewProc("UnregisterClassW")
 
-	getModuleHandleW        = kernel32.NewProc("GetModuleHandleW")
-	capCreateCaptureWindowW = avicap32.NewProc("capCreateCaptureWindowW")
+	getModuleHandleW         = kernel32.NewProc("GetModuleHandleW")
+	capCreateCaptureWindowW  = avicap32.NewProc("capCreateCaptureWindowW")
+	capGetDriverDescriptionW = avicap32.NewProc("capGetDriverDescriptionW")
 )
 
 const (
@@ -480,4 +481,29 @@ func capCreateCaptureWindow(lpszWindowName string, dwStyle, x, y, width, height 
 	}
 
 	return syscall.Handle(ret), nil
+}
+
+// Devices returns the available capture devices.
+func Devices() ([]DeviceInfo, error) {
+	var devices []DeviceInfo
+
+	for i := 0; i < 10; i++ {
+		var name [128]uint16
+
+		ret, _, _ := capGetDriverDescriptionW.Call(uintptr(i),
+			uintptr(unsafe.Pointer(&name[0])), unsafe.Sizeof(name),
+			0, 0)
+		if ret == 0 {
+			continue
+		}
+
+		n := syscall.UTF16ToString(name[:])
+		if n == "" {
+			continue
+		}
+
+		devices = append(devices, DeviceInfo{Index: i, Name: n})
+	}
+
+	return devices, nil
 }

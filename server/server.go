@@ -17,8 +17,9 @@ type Server struct {
 	Name    string
 	Version string
 
-	Index int
-	Delay int
+	Index  int
+	Device string
+	Delay  int
 
 	Width  float64
 	Height float64

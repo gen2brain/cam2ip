@@ -100,6 +100,52 @@ func New(opts Options) (c *Camera, err error) {
 	return c, nil
 }
 
+// Devices returns the available capture devices.
+func Devices() ([]DeviceInfo, error) {
+	if err := loadFrameworks(); err != nil {
+		return nil, err
+	}
+
+	pool := objc.ID(objc.GetClass("NSAutoreleasePool")).Send(selAlloc).Send(selInit)
+	defer pool.Send(selDrain)
+
+	avCaptureDevice := objc.ID(objc.GetClass("AVCaptureDevice"))
+	list := avCaptureDevice.Send(selDevicesWithMediaType, avMediaTypeVideo)
+	count := int(objc.Send[uint64](list, selCount))
+
+	devices := make([]DeviceInfo, 0, count)
+	for i := 0; i < count; i++ {
+		device := list.Send(selObjectAtIndex, uint64(i))
+		devices = append(devices, DeviceInfo{Index: i, Name: goString(device.Send(selLocalizedName))})
+	}
+
+	return devices, nil
+}
+
+// goString converts an NSString to a Go string.
+func goString(s objc.ID) string {
+	if s == 0 {
+		return ""
+	}
+
+	p := objc.Send[*byte](s, selUTF8String)
+	if p == nil {
+		return ""
+	}
+
+	var b []byte
+	for i := 0; ; i++ {
+		ch := *(*byte)(unsafe.Add(unsafe.Pointer(p), i))
+		if ch == 0 {
+			break
+		}
+
+		b = append(b, ch)
+	}
+
+	return string(b)
+}
+
 // Read reads next frame from camera and returns image.
 func (c *Camera) Read() (img image.Image, err error) {
 	c.mu.Lock()
@@ -366,6 +412,8 @@ var (
 	selSetSampleBufferQueue   = objc.RegisterName("setSampleBufferDelegate:queue:")
 	selStartRunning           = objc.RegisterName("startRunning")
 	selStopRunning            = objc.RegisterName("stopRunning")
+	selLocalizedName          = objc.RegisterName("localizedName")
+	selUTF8String             = objc.RegisterName("UTF8String")
 )
 
 var (

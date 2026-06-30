@@ -10,7 +10,6 @@ require (
 	github.com/pbnjay/pixfont v0.0.0-20200714042608-33b744692567
 	github.com/pixiv/go-libjpeg v0.0.0-20190822045933-3da21a74767d
 	go.senan.xyz/flagconf v0.1.11
-	gocv.io/x/gocv v0.43.0
 )
 
 require (

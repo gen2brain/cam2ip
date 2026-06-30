@@ -40,6 +40,8 @@ This command will install `cam2ip` in `GOBIN`, you can point `GOBIN` to e.g. `/u
 Usage: cam2ip [<flags>]
   --index
     	Camera index [CAM2IP_INDEX] (default "0")
+  --device
+    	Camera name to use, matched as substring, overrides index [CAM2IP_DEVICE] (default "")
   --delay
     	Delay between frames, in milliseconds [CAM2IP_DELAY] (default "10")
   --width
@@ -62,6 +64,8 @@ Usage: cam2ip [<flags>]
     	Bind address [CAM2IP_BIND_ADDR] (default ":56000")
   --htpasswd-file
     	Path to htpasswd file, if empty auth is disabled [CAM2IP_HTPASSWD_FILE] (default "")
+  --list-devices
+    	List available cameras and exit (default "false")
   --version
     	Print version and exit (default "false")
 ```

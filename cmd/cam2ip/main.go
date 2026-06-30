@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"runtime/debug"
+	"strings"
 
 	"go.senan.xyz/flagconf"
 
@@ -44,6 +45,7 @@ func main() {
 	srv := server.NewServer()
 
 	flag.IntVar(&srv.Index, "index", 0, "Camera index [CAM2IP_INDEX]")
+	flag.StringVar(&srv.Device, "device", "", "Camera name to use, matched as substring, overrides index [CAM2IP_DEVICE]")
 	flag.IntVar(&srv.Delay, "delay", 10, "Delay between frames, in milliseconds [CAM2IP_DELAY]")
 	flag.Float64Var(&srv.Width, "width", 640, "Frame width [CAM2IP_WIDTH]")
 	flag.Float64Var(&srv.Height, "height", 480, "Frame height [CAM2IP_HEIGHT]")
@@ -59,12 +61,15 @@ func main() {
 	var showVersion bool
 	flag.BoolVar(&showVersion, "version", false, "Print version and exit")
 
+	var listDevices bool
+	flag.BoolVar(&listDevices, "list-devices", false, "List available cameras and exit")
+
 	flag.Usage = func() {
 		color := useColor(os.Stderr)
 
 		stderr("%s %s [<flags>]\n", colorize(color, colorBold, "Usage:"), name)
-		order := []string{"index", "delay", "width", "height", "quality", "rotate", "flip", "no-webgl",
-			"timestamp", "time-format", "bind-addr", "htpasswd-file", "version"}
+		order := []string{"index", "device", "delay", "width", "height", "quality", "rotate", "flip", "no-webgl",
+			"timestamp", "time-format", "bind-addr", "htpasswd-file", "list-devices", "version"}
 
 		for _, name := range order {
 			f := flag.Lookup(name)
@@ -80,6 +85,30 @@ func main() {
 	if showVersion {
 		fmt.Printf("%s %s\n", name, version)
 		os.Exit(0)
+	}
+
+	if listDevices {
+		devices, err := camera.Devices()
+		if err != nil {
+			stderr("%s\n", err.Error())
+			os.Exit(1)
+		}
+
+		for _, d := range devices {
+			fmt.Printf("%d: %s\n", d.Index, d.Name)
+		}
+
+		os.Exit(0)
+	}
+
+	if srv.Device != "" {
+		index, err := deviceIndex(srv.Device)
+		if err != nil {
+			stderr("%s\n", err.Error())
+			os.Exit(1)
+		}
+
+		srv.Index = index
 	}
 
 	srv.Name = name
@@ -121,6 +150,23 @@ func main() {
 
 func stderr(format string, a ...any) {
 	_, _ = fmt.Fprintf(os.Stderr, format, a...)
+}
+
+// deviceIndex returns the index of the first camera whose name contains the query.
+func deviceIndex(name string) (int, error) {
+	devices, err := camera.Devices()
+	if err != nil {
+		return 0, err
+	}
+
+	want := strings.ToLower(name)
+	for _, d := range devices {
+		if strings.Contains(strings.ToLower(d.Name), want) {
+			return d.Index, nil
+		}
+	}
+
+	return 0, fmt.Errorf("camera: no device matching %q", name)
 }
 
 const (

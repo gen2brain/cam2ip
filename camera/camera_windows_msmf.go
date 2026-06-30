@@ -25,6 +25,7 @@ var (
 	iidIMFMediaSource                    = guid{0x279a808d, 0xaec7, 0x40c8, [8]byte{0x9c, 0x6b, 0xa6, 0xb4, 0x92, 0xc7, 0x8a, 0x66}}
 	mfDevsourceAttributeSourceType       = guid{0xc60ac5fe, 0x252a, 0x478f, [8]byte{0xa0, 0xef, 0xbc, 0x8f, 0xa5, 0xf7, 0xca, 0xd3}}
 	mfDevsourceAttributeSourceTypeVidcap = guid{0x8ac3587a, 0x4ae7, 0x42d8, [8]byte{0x99, 0xe0, 0x0a, 0x60, 0x13, 0xee, 0xf9, 0x0f}}
+	mfDevsourceAttributeFriendlyName     = guid{0x60d0e559, 0x52f8, 0x4fa2, [8]byte{0xbb, 0xce, 0xac, 0xdb, 0x34, 0xa8, 0xec, 0x01}}
 	mfSourceReaderEnableVideoProcessing  = guid{0xfb394f3d, 0xccf1, 0x42ee, [8]byte{0xbb, 0xb3, 0xf9, 0xb8, 0x45, 0xd5, 0x68, 0x1d}}
 	mfMTMajorType                        = guid{0x48eba18e, 0xf8c9, 0x4687, [8]byte{0xbf, 0x11, 0x0a, 0x74, 0xc9, 0xf9, 0x6a, 0x8f}}
 	mfMTSubtype                          = guid{0xf7e34c9a, 0x42e8, 0x4714, [8]byte{0xb7, 0x4b, 0xcb, 0x29, 0xd7, 0x2c, 0x35, 0xe5}}
@@ -446,6 +447,70 @@ func nv12ToYCbCr420(data []byte, stride, width, height int, dst *image.YCbCr) {
 			dst.Cr[r*dst.CStride+col] = row[col*2+1]
 		}
 	}
+}
+
+// Devices returns the available capture devices.
+func Devices() ([]DeviceInfo, error) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+
+	for _, p := range []*syscall.LazyProc{procCoInitializeEx, procMFStartup, procMFCreateAttributes, procMFEnumDeviceSources} {
+		if err := p.Find(); err != nil {
+			return nil, fmt.Errorf("camera: %s: %w", p.Name, err)
+		}
+	}
+
+	if r, _, _ := procCoInitializeEx.Call(0, coinitMultithreaded); failed(r) && uint32(r) != rpcEChangedMode {
+		return nil, fmt.Errorf("camera: CoInitializeEx: %#x", r)
+	}
+
+	if r, _, _ := procMFStartup.Call(mfVersion, mfstartupLite); failed(r) {
+		return nil, fmt.Errorf("camera: MFStartup: %#x", r)
+	}
+	defer procMFShutdown.Call()
+	defer procCoUninitialize.Call()
+
+	var attr unsafe.Pointer
+	if r, _, _ := procMFCreateAttributes.Call(uintptr(unsafe.Pointer(&attr)), 1); failed(r) {
+		return nil, fmt.Errorf("camera: MFCreateAttributes: %#x", r)
+	}
+	attrSetGUID(attr, &mfDevsourceAttributeSourceType, &mfDevsourceAttributeSourceTypeVidcap)
+
+	var list *unsafe.Pointer
+	var count uint32
+	r, _, _ := procMFEnumDeviceSources.Call(uintptr(attr), uintptr(unsafe.Pointer(&list)), uintptr(unsafe.Pointer(&count)))
+	release(attr)
+	if failed(r) {
+		return nil, fmt.Errorf("camera: MFEnumDeviceSources: %#x", r)
+	}
+	defer procCoTaskMemFree.Call(uintptr(unsafe.Pointer(list)))
+
+	activates := unsafe.Slice(list, count)
+	devices := make([]DeviceInfo, 0, count)
+
+	for i, a := range activates {
+		devices = append(devices, DeviceInfo{Index: i, Name: friendlyName(a)})
+		release(a)
+	}
+
+	return devices, nil
+}
+
+// friendlyName reads MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME from an activate object.
+func friendlyName(activate unsafe.Pointer) string {
+	var str *uint16
+	var length uint32
+
+	if r := comCall(activate, 13, uintptr(unsafe.Pointer(&mfDevsourceAttributeFriendlyName)), uintptr(unsafe.Pointer(&str)), uintptr(unsafe.Pointer(&length))); failed(r) {
+		return ""
+	}
+	defer procCoTaskMemFree.Call(uintptr(unsafe.Pointer(str)))
+
+	if str == nil {
+		return ""
+	}
+
+	return syscall.UTF16ToString(unsafe.Slice(str, length))
 }
 
 // comCall invokes the method at the given vtable index on a COM object.
