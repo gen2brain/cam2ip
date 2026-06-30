@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime/debug"
 
 	"go.senan.xyz/flagconf"
 
@@ -11,10 +12,33 @@ import (
 	"github.com/gen2brain/cam2ip/server"
 )
 
-const (
-	name    = "cam2ip"
-	version = "1.6"
-)
+const name = "cam2ip"
+
+var version string
+
+func init() {
+	if version != "" {
+		return
+	}
+
+	buildInfo, ok := debug.ReadBuildInfo()
+	if !ok {
+		return
+	}
+
+	if buildInfo.Main.Version != "" {
+		version = buildInfo.Main.Version
+	}
+
+	for _, kv := range buildInfo.Settings {
+		if kv.Key == "vcs.revision" && kv.Value != "" {
+			version = kv.Value
+			if len(version) > 7 {
+				version = version[:7]
+			}
+		}
+	}
+}
 
 func main() {
 	srv := server.NewServer()
@@ -32,10 +56,13 @@ func main() {
 	flag.StringVar(&srv.Bind, "bind-addr", ":56000", "Bind address [CAM2IP_BIND_ADDR]")
 	flag.StringVar(&srv.Htpasswd, "htpasswd-file", "", "Path to htpasswd file, if empty auth is disabled [CAM2IP_HTPASSWD_FILE]")
 
+	var showVersion bool
+	flag.BoolVar(&showVersion, "version", false, "Print version and exit")
+
 	flag.Usage = func() {
 		stderr("Usage: %s [<flags>]\n", name)
 		order := []string{"index", "delay", "width", "height", "quality", "rotate", "flip", "no-webgl",
-			"timestamp", "time-format", "bind-addr", "htpasswd-file"}
+			"timestamp", "time-format", "bind-addr", "htpasswd-file", "version"}
 
 		for _, name := range order {
 			f := flag.Lookup(name)
@@ -47,6 +74,11 @@ func main() {
 
 	flag.Parse()
 	_ = flagconf.ParseEnv()
+
+	if showVersion {
+		fmt.Printf("%s %s\n", name, version)
+		os.Exit(0)
+	}
 
 	srv.Name = name
 	srv.Version = version
@@ -76,7 +108,7 @@ func main() {
 
 	defer srv.Reader.Close()
 
-	stderr("Listening on %s\n", srv.Bind)
+	stderr("%s %s listening on %s\n", name, version, srv.Bind)
 
 	err = srv.ListenAndServe()
 	if err != nil {

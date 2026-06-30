@@ -34,10 +34,6 @@ Download the latest binaries from the [releases](https://github.com/gen2brain/ca
 
 This command will install `cam2ip` in `GOBIN`, you can point `GOBIN` to e.g. `/usr/local/bin` or `~/.local/bin`.
 
-### Run in Docker container
-
-    docker run --device=/dev/video0:/dev/video0 -p56000:56000 -it gen2brain/cam2ip # on RPi use gen2brain/cam2ip:arm
-
 ### Usage
 
 ```
@@ -66,6 +62,8 @@ Usage: cam2ip [<flags>]
     	Bind address [CAM2IP_BIND_ADDR] (default ":56000")
   --htpasswd-file
     	Path to htpasswd file, if empty auth is disabled [CAM2IP_HTPASSWD_FILE] (default "")
+  --version
+    	Print version and exit (default "false")
 ```
 
 ### Handlers
