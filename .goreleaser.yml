@@ -2,6 +2,10 @@ version: 2
 
 project_name: cam2ip
 
+git:
+  ignore_tags:
+    - 'cmd/camview/*'
+
 before:
   hooks:
     - go mod download
