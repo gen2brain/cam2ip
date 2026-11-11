@@ -63,8 +63,3 @@ jobs:
           go-version-file: go.mod
       - name: vfw (windows)
         run: GOOS=windows go build -tags vfw ./...
-      - name: libjpeg
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libjpeg-dev
-          CGO_ENABLED=1 go build -tags libjpeg ./...

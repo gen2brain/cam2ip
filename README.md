@@ -23,7 +23,6 @@ You can also use apps like `ffplay` or `vlc`:
 ### Build tags
 
 * `vfw` - on Windows, use `Video for Windows` to access camera instead of the default `Media Foundation`
-* `libjpeg` - build with `libjpeg` ([go-libjpeg](https://github.com/pixiv/go-libjpeg)) instead of native `image/jpeg`
 
 ### Download
 

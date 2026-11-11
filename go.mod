@@ -8,7 +8,6 @@ require (
 	github.com/gen2brain/jpegn v0.6.2
 	github.com/korandiz/v4l v1.1.0
 	github.com/pbnjay/pixfont v0.0.0-20200714042608-33b744692567
-	github.com/pixiv/go-libjpeg v0.0.0-20190822045933-3da21a74767d
 	go.senan.xyz/flagconf v0.1.11
 	golang.org/x/crypto v0.59.0
 	golang.org/x/term v0.48.0

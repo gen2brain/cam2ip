@@ -1,5 +1,3 @@
-//go:build !libjpeg
-
 // Package image.
 package image
 

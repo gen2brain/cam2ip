@@ -1,5 +1,3 @@
-//go:build !libjpeg
-
 package image_test
 
 import (
