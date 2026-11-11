@@ -10,8 +10,8 @@ github.com/ebitengine/purego v0.11.3 h1:OB+JLpdm7ioymhyA+6s5kbb/uOuYycAgL8NNTFc5
 github.com/ebitengine/purego v0.11.3/go.mod h1:DCHPP08djqhNSoTfImcnHYQRZmd0qhakvrozqaEYhGQ=
 github.com/gen2brain/base64 v0.2.0 h1:tIkh2/g6oiDKGfLfsbFEXmSeb5lxyTGbaFV2rQwpcaw=
 github.com/gen2brain/base64 v0.2.0/go.mod h1:tiBvPzg3qFDIggMPy0TEedCJVCeNOhDYeJMErNqvZNk=
-github.com/gen2brain/cam2ip v1.7.1-0.20260704073444-57c82eb3a02e h1:MSd4ptIXGkD6JfFRC4WZ0ULo4CIxMnuH6uv1TZP+RnM=
-github.com/gen2brain/cam2ip v1.7.1-0.20260704073444-57c82eb3a02e/go.mod h1:cjpZVlBsNVzYEGkgtrEoJQFT3mi9ND1ZQ9h3VfGp56Y=
+github.com/gen2brain/cam2ip v1.7.1-0.20261111183112-6dab3e9c60c0 h1:JmtOV83DTigYldQEmLMwKKD0iBKZpyCRmfx87ZaU3mo=
+github.com/gen2brain/cam2ip v1.7.1-0.20261111183112-6dab3e9c60c0/go.mod h1:ZQbmnq4zV97Miq7Gx7n9sgC9uuPzcRtxtJnQwN3eJ+8=
 github.com/gen2brain/iv v0.5.0 h1:pYCucaCsQtuK01hUJNIsN6C15D1yYQDqY9+n8bGQ6U0=
 github.com/gen2brain/iv v0.5.0/go.mod h1:gMuzbzyp9xEs8MC17PXLjRDgybemMjCzXiPRjuRBmmA=
 github.com/gen2brain/jpegn v0.6.2 h1:U69MV6ZkRg6yWn5xTehCgUxQRq+eJNkdvuNuCOgGMik=
@@ -28,8 +28,6 @@ github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
 github.com/pbnjay/pixfont v0.0.0-20200714042608-33b744692567 h1:pKjmNHL7BCXhgsnSlN6Ov3WAN2jbJMCx6IvrMN9GNfc=
 github.com/pbnjay/pixfont v0.0.0-20200714042608-33b744692567/go.mod h1:ytYavTmrpWG4s7UOfDhP6m4ASL5XA66nrOcUn1e2M78=
-github.com/pixiv/go-libjpeg v0.0.0-20190822045933-3da21a74767d h1:ls+7AYarUlUSetfnN/DKVNcK6W8mQWc6VblmOm4XwX0=
-github.com/pixiv/go-libjpeg v0.0.0-20190822045933-3da21a74767d/go.mod h1:DO7ixpslN6XfbWzeNH9vkS5CF2FQUX81B85rYe9zDxU=
 github.com/tailscale/win v0.0.0-20260619195133-2d76c33a64c1 h1:QzOW7bZOlg5/hi1W6dStSN9qazTHkHj5kO7sTA5aymY=
 github.com/tailscale/win v0.0.0-20260619195133-2d76c33a64c1/go.mod h1:vwG7VvIPzIYNJd0Nio6PZW7yr8KNNFEc8EVQ+J/B4bk=
 github.com/tc-hib/winres v0.2.1 h1:YDE0FiP0VmtRaDn7+aaChp1KiF4owBiJa5l964l5ujA=
