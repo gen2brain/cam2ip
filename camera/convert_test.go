@@ -1,6 +1,7 @@
 package camera
 
 import (
+	"bytes"
 	"image"
 	"testing"
 )
@@ -179,5 +180,32 @@ func assertBytes(t *testing.T, name string, got, want []byte) {
 		if got[i] != want[i] {
 			t.Errorf("%s[%d] = %d, want %d", name, i, got[i], want[i])
 		}
+	}
+}
+
+func TestExpandRange(t *testing.T) {
+	img := image.NewYCbCr(image.Rect(0, 0, 2, 2), image.YCbCrSubsampleRatio444)
+	copy(img.Y, []byte{16, 235, 0, 255})
+	copy(img.Cb, []byte{128, 16, 240, 90})
+	copy(img.Cr, []byte{128, 240, 16, 240})
+
+	expandRange(img)
+
+	if want := []byte{0, 255, 0, 255}; !bytes.Equal(img.Y, want) {
+		t.Errorf("Y = %v, want %v", img.Y, want)
+	}
+
+	if want := []byte{128, 1, 255}; !bytes.Equal(img.Cb[:3], want) {
+		t.Errorf("Cb = %v, want %v", img.Cb[:3], want)
+	}
+
+	red := image.NewYCbCr(image.Rect(0, 0, 1, 1), image.YCbCrSubsampleRatio444)
+	red.Y[0], red.Cb[0], red.Cr[0] = 81, 90, 240
+
+	expandRange(red)
+
+	r, g, b, _ := red.At(0, 0).RGBA()
+	if r>>8 < 250 || g>>8 > 5 || b>>8 > 5 {
+		t.Errorf("limited-range red = %d,%d,%d, want ~255,0,0", r>>8, g>>8, b>>8)
 	}
 }

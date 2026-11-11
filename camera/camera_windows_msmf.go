@@ -31,6 +31,7 @@ var (
 	mfMTSubtype                          = guid{0xf7e34c9a, 0x42e8, 0x4714, [8]byte{0xb7, 0x4b, 0xcb, 0x29, 0xd7, 0x2c, 0x35, 0xe5}}
 	mfMTFrameSize                        = guid{0x1652c33d, 0xd6b2, 0x4012, [8]byte{0xb8, 0x34, 0x72, 0x03, 0x08, 0x49, 0xa3, 0x7d}}
 	mfMTDefaultStride                    = guid{0x644b4e48, 0x1e02, 0x4516, [8]byte{0xb0, 0xeb, 0xc0, 0x1c, 0xa9, 0xd4, 0x9a, 0xc6}}
+	mfMTVideoNominalRange                = guid{0xc21b8ee5, 0xb956, 0x4071, [8]byte{0x8d, 0xaf, 0x32, 0x5e, 0xdf, 0x5c, 0xab, 0x11}}
 	mfMediaTypeVideo                     = guid{0x73646976, 0x0000, 0x0010, [8]byte{0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}}
 	mfVideoFormatNV12                    = guid{0x3231564e, 0x0000, 0x0010, [8]byte{0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}}
 )
@@ -48,6 +49,9 @@ const (
 	readerfEndOfStream            = 0x0002
 	readerfCurrentMediaTypeChange = 0x0020
 )
+
+// mfNominalRange0to255 is MFNominalRange_0_255; anything else is treated as 16-235.
+const mfNominalRange0to255 = 1
 
 // IMFAttributes vtable indices, shared by IMFMediaType, IMFSample and IMFActivate.
 const (
@@ -82,12 +86,13 @@ type Camera struct {
 	source unsafe.Pointer
 	reader unsafe.Pointer
 
-	mu     sync.Mutex
-	cond   *sync.Cond
-	frame  []byte
-	width  int
-	height int
-	stride int
+	mu      sync.Mutex
+	cond    *sync.Cond
+	frame   []byte
+	width   int
+	height  int
+	stride  int
+	limited bool
 
 	haveFrame bool
 	closed    bool
@@ -291,6 +296,12 @@ func (c *Camera) updateFormat() {
 	} else {
 		c.stride = c.width
 	}
+
+	var nominal uint32
+	c.limited = true
+	if r := comCall(mt, idxGetUINT32, uintptr(unsafe.Pointer(&mfMTVideoNominalRange)), uintptr(unsafe.Pointer(&nominal))); !failed(r) && nominal == mfNominalRange0to255 {
+		c.limited = false
+	}
 }
 
 // grab reads one sample and stores the latest frame.
@@ -372,6 +383,10 @@ func (c *Camera) Read() (img image.Image, err error) {
 	}
 
 	nv12ToYCbCr420(c.frame, c.stride, c.width, c.height, c.ycbcr)
+	if c.limited {
+		expandRange(c.ycbcr)
+	}
+
 	img = c.ycbcr
 	c.haveFrame = false
 

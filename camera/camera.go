@@ -294,3 +294,41 @@ func greyToGray(data []byte, dst *image.Gray) error {
 
 	return nil
 }
+
+var lumaFull, chromaFull = rangeTables()
+
+// rangeTables builds the limited-to-full range lookup tables for BT.601 luma (16-235) and chroma (16-240).
+func rangeTables() (luma, chroma [256]byte) {
+	for i := range 256 {
+		luma[i] = clampByte((float64(i)-16)*255/219 + 0.5)
+		chroma[i] = clampByte((float64(i)-128)*255/224 + 128.5)
+	}
+
+	return
+}
+
+func clampByte(v float64) byte {
+	switch {
+	case v < 0:
+		return 0
+	case v > 255:
+		return 255
+	}
+
+	return byte(v)
+}
+
+// expandRange stretches limited-range samples in img to the full range that image.YCbCr and JPEG assume.
+func expandRange(img *image.YCbCr) {
+	for i, v := range img.Y {
+		img.Y[i] = lumaFull[v]
+	}
+
+	for i, v := range img.Cb {
+		img.Cb[i] = chromaFull[v]
+	}
+
+	for i, v := range img.Cr {
+		img.Cr[i] = chromaFull[v]
+	}
+}

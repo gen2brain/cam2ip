@@ -8,8 +8,10 @@ import (
 	"image"
 	"io"
 	"slices"
+	"unsafe"
 
 	"github.com/korandiz/v4l"
+	"golang.org/x/sys/unix"
 
 	im "github.com/gen2brain/cam2ip/image"
 )
@@ -25,12 +27,13 @@ var supportedFormats = []uint32{
 
 // Camera represents camera.
 type Camera struct {
-	opts   Options
-	camera *v4l.Device
-	config v4l.DeviceConfig
-	ycbcr  *image.YCbCr
-	rgba   *image.RGBA
-	gray   *image.Gray
+	opts    Options
+	camera  *v4l.Device
+	config  v4l.DeviceConfig
+	limited bool
+	ycbcr   *image.YCbCr
+	rgba    *image.RGBA
+	gray    *image.Gray
 }
 
 // New returns new Camera for given camera index.
@@ -45,7 +48,9 @@ func New(opts Options) (c *Camera, err error) {
 		return
 	}
 
-	c.camera, err = v4l.Open(devices[opts.Index].Path)
+	path := devices[opts.Index].Path
+
+	c.camera, err = v4l.Open(path)
 	if err != nil {
 		err = fmt.Errorf("camera: %w", err)
 
@@ -105,6 +110,8 @@ func New(opts Options) (c *Camera, err error) {
 
 		return
 	}
+
+	c.limited = limitedRange(path)
 
 	rect := image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height))
 
@@ -208,17 +215,19 @@ func (c *Camera) Read() (img image.Image, err error) {
 
 // convert converts a raw frame in the negotiated format to an image.
 func (c *Camera) convert(data []byte) (image.Image, error) {
-	if y0, y1, cb, cr, ok := packed422Offsets(c.config.Format); ok {
-		return c.ycbcr, packedYUV422ToYCbCr(data, c.ycbcr, y0, y1, cb, cr)
+	if c.ycbcr != nil {
+		if err := c.convertYUV(data); err != nil {
+			return nil, err
+		}
+
+		if c.limited {
+			expandRange(c.ycbcr)
+		}
+
+		return c.ycbcr, nil
 	}
 
 	switch c.config.Format {
-	case yu12FourCC:
-		return c.ycbcr, planar420ToYCbCr(data, c.ycbcr, false)
-	case yv12FourCC:
-		return c.ycbcr, planar420ToYCbCr(data, c.ycbcr, true)
-	case nv12FourCC:
-		return c.ycbcr, nv12ToYCbCr(data, c.ycbcr)
 	case rgb24FourCC:
 		return c.rgba, rgb24ToRgba(data, c.rgba, false)
 	case bgr24FourCC:
@@ -228,6 +237,64 @@ func (c *Camera) convert(data []byte) (image.Image, error) {
 	}
 
 	return nil, fmt.Errorf("unsupported format %d", c.config.Format)
+}
+
+// convertYUV converts a raw YUV frame in the negotiated format into c.ycbcr.
+func (c *Camera) convertYUV(data []byte) error {
+	if y0, y1, cb, cr, ok := packed422Offsets(c.config.Format); ok {
+		return packedYUV422ToYCbCr(data, c.ycbcr, y0, y1, cb, cr)
+	}
+
+	switch c.config.Format {
+	case yu12FourCC:
+		return planar420ToYCbCr(data, c.ycbcr, false)
+	case yv12FourCC:
+		return planar420ToYCbCr(data, c.ycbcr, true)
+	case nv12FourCC:
+		return nv12ToYCbCr(data, c.ycbcr)
+	}
+
+	return fmt.Errorf("unsupported format %d", c.config.Format)
+}
+
+// v4l2Format is struct v4l2_format; the union is pointer aligned, 208 bytes in all on 64-bit and 204 on 32-bit.
+type v4l2Format struct {
+	typ uint32
+	fmt [200 / unsafe.Sizeof(uintptr(0))]uintptr
+}
+
+const (
+	v4l2BufTypeVideoCapture = 1
+	v4l2ColorspaceJPEG      = 7
+	v4l2QuantizationFull    = 1
+	v4l2QuantizationLimited = 2
+)
+
+// limitedRange reports whether the device delivers YUV in limited range, applying V4L2_MAP_QUANTIZATION_DEFAULT.
+func limitedRange(path string) bool {
+	fd, err := unix.Open(path, unix.O_RDWR|unix.O_NONBLOCK|unix.O_CLOEXEC, 0)
+	if err != nil {
+		return true
+	}
+	defer unix.Close(fd)
+
+	f := v4l2Format{typ: v4l2BufTypeVideoCapture}
+	req := uintptr(3<<30 | unsafe.Sizeof(f)<<16 | 'V'<<8 | 4)
+
+	if _, _, e := unix.Syscall(unix.SYS_IOCTL, uintptr(fd), req, uintptr(unsafe.Pointer(&f))); e != 0 {
+		return true
+	}
+
+	pix := (*[12]uint32)(unsafe.Pointer(&f.fmt))
+
+	switch pix[10] {
+	case v4l2QuantizationFull:
+		return false
+	case v4l2QuantizationLimited:
+		return true
+	}
+
+	return pix[6] != v4l2ColorspaceJPEG
 }
 
 // Close closes camera.

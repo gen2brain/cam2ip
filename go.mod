@@ -10,12 +10,10 @@ require (
 	github.com/pbnjay/pixfont v0.0.0-20200714042608-33b744692567
 	go.senan.xyz/flagconf v0.1.11
 	golang.org/x/crypto v0.59.0
+	golang.org/x/sys v0.50.0
 	golang.org/x/term v0.48.0
 )
 
-require (
-	golang.org/x/net v0.62.0 // indirect
-	golang.org/x/sys v0.50.0 // indirect
-)
+require golang.org/x/net v0.62.0 // indirect
 
 go 1.26.4

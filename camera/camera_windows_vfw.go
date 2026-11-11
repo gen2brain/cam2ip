@@ -221,6 +221,7 @@ func (c *Camera) Read() (img image.Image, err error) {
 			return
 		}
 
+		expandRange(c.ycbcr)
 		img = c.ycbcr
 	case c.format == mjpgFourCC:
 		i, e := im.NewDecoder(bytes.NewReader(data)).Decode()
