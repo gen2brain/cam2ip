@@ -6,8 +6,8 @@ github.com/ebitengine/purego v0.11.3 h1:OB+JLpdm7ioymhyA+6s5kbb/uOuYycAgL8NNTFc5
 github.com/ebitengine/purego v0.11.3/go.mod h1:DCHPP08djqhNSoTfImcnHYQRZmd0qhakvrozqaEYhGQ=
 github.com/gen2brain/base64 v0.2.0 h1:tIkh2/g6oiDKGfLfsbFEXmSeb5lxyTGbaFV2rQwpcaw=
 github.com/gen2brain/base64 v0.2.0/go.mod h1:tiBvPzg3qFDIggMPy0TEedCJVCeNOhDYeJMErNqvZNk=
-github.com/gen2brain/cam2ip v1.7.1-0.20261111183112-6dab3e9c60c0 h1:JmtOV83DTigYldQEmLMwKKD0iBKZpyCRmfx87ZaU3mo=
-github.com/gen2brain/cam2ip v1.7.1-0.20261111183112-6dab3e9c60c0/go.mod h1:ZQbmnq4zV97Miq7Gx7n9sgC9uuPzcRtxtJnQwN3eJ+8=
+github.com/gen2brain/cam2ip v1.8.1-0.20261127081252-59c87bfd7dfd h1:4s2/J1LMv6qXs95oyveEFCq4tYmNX3XgR/Go8VQwSJY=
+github.com/gen2brain/cam2ip v1.8.1-0.20261127081252-59c87bfd7dfd/go.mod h1:ZQbmnq4zV97Miq7Gx7n9sgC9uuPzcRtxtJnQwN3eJ+8=
 github.com/gen2brain/iv v0.6.0 h1:kjTV/tq7WSYB2ELRKZcwcf8z+ccMbDDWAmhKjvgErVk=
 github.com/gen2brain/iv v0.6.0/go.mod h1:5WUm9X8hlgWBXVO3bziIWYge9ZPSUz/wuy5rMcrbgFg=
 github.com/gen2brain/jpegn v0.6.2 h1:U69MV6ZkRg6yWn5xTehCgUxQRq+eJNkdvuNuCOgGMik=

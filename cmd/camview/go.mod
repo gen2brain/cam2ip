@@ -3,7 +3,7 @@ module github.com/gen2brain/cam2ip/cmd/camview
 go 1.26.4
 
 require (
-	github.com/gen2brain/cam2ip v1.7.1-0.20261111183112-6dab3e9c60c0
+	github.com/gen2brain/cam2ip v1.8.1-0.20261127081252-59c87bfd7dfd
 	github.com/gen2brain/iv v0.6.0
 )
 
