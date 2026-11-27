@@ -97,8 +97,7 @@ func New(opts Options) (c *Camera, err error) {
 	}
 	c.config.Format = format
 
-	c.config.Width = int(opts.Width)
-	c.config.Height = int(opts.Height)
+	c.config.Width, c.config.Height = nearestSize(configs, format, int(opts.Width), int(opts.Height))
 
 	if fps, ok := maxFrameRate(configs, format, c.config.Width, c.config.Height); ok {
 		c.config.FPS = fps
@@ -111,9 +110,16 @@ func New(opts Options) (c *Camera, err error) {
 		return
 	}
 
+	c.config, err = c.camera.GetConfig()
+	if err != nil {
+		err = fmt.Errorf("camera: can not get config: %w", err)
+
+		return
+	}
+
 	c.limited = limitedRange(path)
 
-	rect := image.Rect(0, 0, int(c.opts.Width), int(c.opts.Height))
+	rect := image.Rect(0, 0, c.config.Width, c.config.Height)
 
 	switch c.config.Format {
 	case yuy2FourCC, yuyvFourCC, uyvyFourCC, yvyuFourCC, vyuyFourCC:
@@ -134,6 +140,33 @@ func New(opts Options) (c *Camera, err error) {
 	}
 
 	return
+}
+
+// nearestSize returns the size the device offers for format closest to width x height.
+func nearestSize(configs []v4l.DeviceConfig, format uint32, width, height int) (int, int) {
+	bw, bh := width, height
+	best := -1
+
+	for _, cfg := range configs {
+		if cfg.Format != format {
+			continue
+		}
+
+		d := abs(cfg.Width-width) + abs(cfg.Height-height)
+		if best < 0 || d < best {
+			bw, bh, best = cfg.Width, cfg.Height, d
+		}
+	}
+
+	return bw, bh
+}
+
+func abs(v int) int {
+	if v < 0 {
+		return -v
+	}
+
+	return v
 }
 
 // maxFrameRate returns the highest frame rate the device offers for the given format and resolution.
