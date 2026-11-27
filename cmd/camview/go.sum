@@ -1,7 +1,3 @@
-codeberg.org/tesselslate/wl v0.4.26 h1:EqA7Ix/ZU/T95zCm8ce6xWiAi4J+PdV/lAOjA3wUAsM=
-codeberg.org/tesselslate/wl v0.4.26/go.mod h1:9eLDoCveYvMpKcUIqig1ctVKrQm5f8aoCHlgDWvyf/U=
-codeberg.org/tesselslate/wl-protocols v0.4.49 h1:Z92oMKW0vrEzxuJw/GBrFVBopRrxV9pDMQJS59ApWgA=
-codeberg.org/tesselslate/wl-protocols v0.4.49/go.mod h1:JV0b6378c9VOyuiIdEEbH0U5D1HoWqTZFYCHnPhyjrc=
 github.com/NeowayLabs/drm v0.0.0-20190824133025-4939fc0ad345 h1:gsz1u5J8hnoPtBaA5dUdluC4lZNYgYRZmEchdxTuNxc=
 github.com/NeowayLabs/drm v0.0.0-20190824133025-4939fc0ad345/go.mod h1:B8Pf8lJWIsLTs7oyWkXOWOGAZiQQVomlZurKAgx8HBA=
 github.com/dblohm7/wingoes v0.0.0-20260526185140-fb298caac7ca h1:h1Awca4lQOspNR/2eeo04Ricn5NixDX9mb17WSAgLhQ=
@@ -12,12 +8,16 @@ github.com/gen2brain/base64 v0.2.0 h1:tIkh2/g6oiDKGfLfsbFEXmSeb5lxyTGbaFV2rQwpca
 github.com/gen2brain/base64 v0.2.0/go.mod h1:tiBvPzg3qFDIggMPy0TEedCJVCeNOhDYeJMErNqvZNk=
 github.com/gen2brain/cam2ip v1.7.1-0.20261111183112-6dab3e9c60c0 h1:JmtOV83DTigYldQEmLMwKKD0iBKZpyCRmfx87ZaU3mo=
 github.com/gen2brain/cam2ip v1.7.1-0.20261111183112-6dab3e9c60c0/go.mod h1:ZQbmnq4zV97Miq7Gx7n9sgC9uuPzcRtxtJnQwN3eJ+8=
-github.com/gen2brain/iv v0.5.0 h1:pYCucaCsQtuK01hUJNIsN6C15D1yYQDqY9+n8bGQ6U0=
-github.com/gen2brain/iv v0.5.0/go.mod h1:gMuzbzyp9xEs8MC17PXLjRDgybemMjCzXiPRjuRBmmA=
+github.com/gen2brain/iv v0.6.0 h1:kjTV/tq7WSYB2ELRKZcwcf8z+ccMbDDWAmhKjvgErVk=
+github.com/gen2brain/iv v0.6.0/go.mod h1:5WUm9X8hlgWBXVO3bziIWYge9ZPSUz/wuy5rMcrbgFg=
 github.com/gen2brain/jpegn v0.6.2 h1:U69MV6ZkRg6yWn5xTehCgUxQRq+eJNkdvuNuCOgGMik=
 github.com/gen2brain/jpegn v0.6.2/go.mod h1:43hks+w5VNTUDU34uk0tsXYJ97nbYL2idAlZF0D66+A=
 github.com/gen2brain/shm v0.2.2 h1:CmyCEXB392Mva9kdpec09CAhVZJIx9YhA/CFoWke0iE=
 github.com/gen2brain/shm v0.2.2/go.mod h1:UgIcVtvmOu+aCJpqJX7GOtiN7X2ct+TKLg4RTxwPIUA=
+github.com/gen2brain/wl v0.5.26 h1:/NtwQWZzz7a2dS83sDnzTxGReko0wbRTSwyghiqfHcs=
+github.com/gen2brain/wl v0.5.26/go.mod h1:C2Zz79m7b5Q5x0wEjO32kxGsrMWjlDvPQc1wZtD4pB4=
+github.com/gen2brain/wl-protocols v0.5.49 h1:+HEJ6muBNd+KbvilSBJfqB55UW7QNpKPD5rQlvoe8dU=
+github.com/gen2brain/wl-protocols v0.5.49/go.mod h1:hLBfI6NIXQbfIz+D4H/G0Si2UmQ+pxzP6T1z8wExqfQ=
 github.com/holoplot/go-evdev v0.0.0-20260909133534-d873ed210bda h1:/5a6e/KLg8R+KhKxK+ze8CPBumoJQwN64KSHksirun0=
 github.com/holoplot/go-evdev v0.0.0-20260909133534-d873ed210bda/go.mod h1:iHAf8OIncO2gcQ8XOjS7CMJ2aPbX2Bs0wl5pZyanEqk=
 github.com/jezek/xgb v1.3.1 h1:NQCAEfQyzN+3RjWUSHBuVIxQcy2YfG3/mNvKfs/0rEg=
