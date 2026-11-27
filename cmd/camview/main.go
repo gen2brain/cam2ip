@@ -215,12 +215,32 @@ func main() {
 type stream struct {
 	mu     sync.Mutex
 	img    image.Image
+	shown  image.Image
+	free   []image.Image
 	cancel context.CancelFunc
+}
+
+// buffer returns a recycled frame buffer, or nil.
+func (s *stream) buffer() image.Image {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if n := len(s.free); n > 0 {
+		b := s.free[n-1]
+		s.free = s.free[:n-1]
+
+		return b
+	}
+
+	return nil
 }
 
 // set stores a new frame and wakes the in-flight Display.
 func (s *stream) set(img image.Image) {
 	s.mu.Lock()
+	if s.img != nil {
+		s.free = append(s.free, s.img)
+	}
 	s.img = img
 	s.mu.Unlock()
 
@@ -244,10 +264,54 @@ func (s *stream) frame() (image.Image, context.Context) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	if s.img != nil {
+		if s.shown != nil {
+			s.free = append(s.free, s.shown)
+		}
+		s.shown, s.img = s.img, nil
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	s.cancel = cancel
 
-	return s.img, ctx
+	return s.shown, ctx
+}
+
+// copyFrame copies src into dst, reusing dst when it matches.
+func copyFrame(dst, src image.Image) image.Image {
+	switch s := src.(type) {
+	case *image.YCbCr:
+		d, ok := dst.(*image.YCbCr)
+		if !ok || len(d.Y) != len(s.Y) || len(d.Cb) != len(s.Cb) {
+			d = &image.YCbCr{Y: make([]byte, len(s.Y)), Cb: make([]byte, len(s.Cb)), Cr: make([]byte, len(s.Cr))}
+		}
+		copy(d.Y, s.Y)
+		copy(d.Cb, s.Cb)
+		copy(d.Cr, s.Cr)
+		d.YStride, d.CStride, d.SubsampleRatio, d.Rect = s.YStride, s.CStride, s.SubsampleRatio, s.Rect
+
+		return d
+	case *image.RGBA:
+		d, ok := dst.(*image.RGBA)
+		if !ok || len(d.Pix) != len(s.Pix) {
+			d = &image.RGBA{Pix: make([]byte, len(s.Pix))}
+		}
+		copy(d.Pix, s.Pix)
+		d.Stride, d.Rect = s.Stride, s.Rect
+
+		return d
+	case *image.Gray:
+		d, ok := dst.(*image.Gray)
+		if !ok || len(d.Pix) != len(s.Pix) {
+			d = &image.Gray{Pix: make([]byte, len(s.Pix))}
+		}
+		copy(d.Pix, s.Pix)
+		d.Stride, d.Rect = s.Stride, s.Rect
+
+		return d
+	}
+
+	return src
 }
 
 // capture reads the newest frame until quit; Read() paces the loop, fps caps it.
@@ -296,7 +360,7 @@ func capture(cam *camera.Camera, s *stream, fps int, showFPS bool, done <-chan s
 			continue
 		}
 
-		s.set(img)
+		s.set(copyFrame(s.buffer(), img))
 
 		if frames++; showFPS {
 			if d := time.Since(mark); d >= time.Second {
